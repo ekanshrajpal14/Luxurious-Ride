@@ -11,13 +11,20 @@ import {
 import Navbar from '../global/Navbar';
 import GradientButton from '../customs/GradientButton';
 import { getTheme } from '../../theme/helper';
-
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import {
+  AuthStackParamList,
+  RootStackParamsList,
+} from '../../types/navigationTypes';
+type Props = NativeStackScreenProps<
+  AuthStackParamList & RootStackParamsList,
+  'otpVerify'
+>;
 const OTP_LENGTH = 4;
 
-const OTPVerifyScreen: React.FC = () => {
+const OTPVerifyScreen: React.FC<Props> = ({ navigation }) => {
   const theme = getTheme();
   const [otp, setOtp] = useState(['', '', '', '']);
-
   const inputs = useRef<TextInput[]>([]);
 
   const handleChange = (text: string, index: number) => {
@@ -42,6 +49,17 @@ const OTPVerifyScreen: React.FC = () => {
   const handleContinue = () => {
     const code = otp.join('');
     console.log('OTP:', code);
+    navigation.reset({
+      index: 0,
+      routes: [
+        {
+          name: 'mainApp',
+          // state: {
+          //   routes: [{ name: 'tabs' }],
+          // },
+        },
+      ],
+    });
     // TODO verify OTP
   };
 

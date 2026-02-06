@@ -6,8 +6,8 @@ import OnboardScreen from '../screens/OnboardScreen';
 import { StatusBar } from 'react-native';
 import { getTheme } from '../theme/helper';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import SignupStep from '../screens/auth/Login';
 import AuthNavigator from './AuthNavigator';
+import MainAppNavigator from './MainAppNavigator';
 
 const Stack = createNativeStackNavigator<RootStackParamsList>();
 const RootNavigator = () => {
@@ -32,6 +32,11 @@ const RootNavigator = () => {
         <Stack.Screen
           name="auth"
           component={AuthNavigator}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="mainApp"
+          component={MainAppNavigator}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>
