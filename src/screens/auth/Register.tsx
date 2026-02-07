@@ -6,8 +6,9 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   ScrollView,
+  Alert,
 } from 'react-native';
-import React from 'react';
+import React, { useState } from 'react';
 import { getTheme } from '../../theme/helper';
 import Navbar from '../../components/global/Navbar';
 import GradientButton from '../../components/customs/GradientButton';
@@ -15,45 +16,90 @@ import { Eye } from 'lucide-react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AuthStackParamList } from '../../types/navigationTypes';
 import Input from '../../components/customs/Input';
+import { healthCheckRoute, registerUserApi } from '../../api/api';
+import { useToast } from '../../hooks/useToast';
+import { showErrorMessage } from '../../utils/ErrorHandler';
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'register'>;
 const Register: React.FC<Props> = ({ navigation }) => {
+  const { showSuccess, showError } = useToast();
   const theme = getTheme();
+  const [name, setName] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [loader, setLoader] = useState<boolean>(false);
+
+  const handleRegisterSubmit = async () => {
+    try {
+      setLoader(true);
+      if (!name.trim() || !email.trim() || !password.trim()) {
+        showError('Fields cannot be empty');
+        return;
+      }
+
+      const resp = await registerUserApi({
+        email_phone: email,
+        name,
+        password,
+      });
+      if (!resp.success) {
+        showError('Failed to create account');
+        return
+      }
+      showSuccess(resp.message)
+      navigation.navigate('otpVerify', {
+        email_phone: email,
+      });
+    } catch (err) {
+    } finally {
+      setLoader(false);
+    }
+  };
 
   return (
     <KeyboardAvoidingView
-      style={{ flex: 1 }}
+      style={{ flex: 1, backgroundColor: theme.background }}
       behavior="padding"
       keyboardVerticalOffset={20}
     >
       <ScrollView
         style={[styles.container, { backgroundColor: theme.background }]}
       >
-        {/* Header */}
         <Navbar />
-
-        {/* Title */}
         <Text style={[styles.title, { color: theme.text }]}>Sign Up</Text>
 
         {/* Inputs */}
-        <Input placeholder="Full Name" placeholderTextColor="#9a9a9a" />
+        <Input
+          placeholder="Full Name"
+          placeholderTextColor="#9a9a9a"
+          value={name}
+          onChangeText={val => setName(val)}
+        />
 
-        <Input placeholder="Email Address" placeholderTextColor="#9a9a9a" />
+        <Input
+          placeholder="Email Address"
+          placeholderTextColor="#9a9a9a"
+          value={email}
+          onChangeText={val => setEmail(val)}
+        />
 
         <Input
           isPassword
           placeholder="Password"
           placeholderTextColor="#9a9a9a"
           secureTextEntry
+          value={password}
+          onChangeText={val => setPassword(val)}
         />
 
-        <Input placeholder="Country" placeholderTextColor="#9a9a9a" />
+        {/* <Input placeholder="Country" placeholderTextColor="#9a9a9a" /> */}
 
         {/* Primary button */}
         <GradientButton
           title="Sign up"
           style={{ marginTop: 10 }}
-          onPress={() => navigation.navigate('otpVerify')}
+          loading={loader}
+          onPress={() => handleRegisterSubmit()}
         />
 
         {/* Secondary button */}
@@ -66,6 +112,7 @@ const Register: React.FC<Props> = ({ navigation }) => {
             borderWidth: 1,
             borderColor: theme.primary,
             marginTop: 12,
+            borderRadius: 24,
           }}
           onPress={() => navigation.navigate('login')}
         />

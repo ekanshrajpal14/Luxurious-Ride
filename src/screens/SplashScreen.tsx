@@ -1,19 +1,20 @@
-import { View, Text, Switch, Image } from 'react-native';
+import { View, Text, Image } from 'react-native';
 import React from 'react';
-import { useAppDispatch } from '../hooks/useAppDispatch';
 import { getTheme } from '../theme/helper';
-import { toggleTheme } from '../store/slices/themeSlice';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamsList } from '../types/navigationTypes';
 import { textSizes } from '../theme/text';
+import { useAppSelector } from '../hooks/useAppSelector';
 
 const SplashScreen = (props: NativeStackScreenProps<RootStackParamsList>) => {
-
+  const HasSeenOnboarding = useAppSelector(
+    state => state.app.hasSeenOnboarding,
+  );
   const theme = getTheme();
   setTimeout(() => {
     props.navigation.reset({
       index: 0,
-      routes: [{ name: 'onboard' }],
+      routes: [{ name: !HasSeenOnboarding ? 'onboard' : 'auth' }],
     });
   }, 1000);
 
@@ -26,8 +27,20 @@ const SplashScreen = (props: NativeStackScreenProps<RootStackParamsList>) => {
         alignItems: 'center',
       }}
     >
-      <Image source={require("../../assets/images/LR_LOGO.png")} style={{width:150,height:150}}/>
-      <Text style={{ color: theme.text,fontSize:textSizes.xl2,fontWeight:700,marginTop:20 }}>Luxurious Ride</Text>
+      <Image
+        source={require('../../assets/images/LR_LOGO.png')}
+        style={{ width: 150, height: 150 }}
+      />
+      <Text
+        style={{
+          color: theme.text,
+          fontSize: textSizes.xl2,
+          fontWeight: 700,
+          marginTop: 20,
+        }}
+      >
+        Luxurious Ride
+      </Text>
     </View>
   );
 };

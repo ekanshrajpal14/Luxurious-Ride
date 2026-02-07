@@ -18,7 +18,7 @@ const AuthNavigator = () => {
         <StatusBar
           barStyle={theme.mode === 'dark' ? 'light-content' : 'dark-content'}
         />
-        <Stack.Navigator>
+        <Stack.Navigator initialRouteName='register' >
           <Stack.Screen
             name="register"
             component={Register}

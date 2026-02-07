@@ -11,7 +11,9 @@ export type AuthStackParamList = {
   login: undefined;
   register: undefined;
   forgotPassword: undefined;
-  otpVerify: undefined;
+  otpVerify: {
+    email_phone: string;
+  };
 };
 
 export type DrawerStachParamList = {

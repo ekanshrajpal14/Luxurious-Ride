@@ -8,6 +8,7 @@ import { getTheme } from '../theme/helper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AuthNavigator from './AuthNavigator';
 import MainAppNavigator from './MainAppNavigator';
+import { useAppSelector } from '../hooks/useAppSelector';
 
 const Stack = createNativeStackNavigator<RootStackParamsList>();
 const RootNavigator = () => {
@@ -29,6 +30,7 @@ const RootNavigator = () => {
           component={OnboardScreen}
           options={{ headerShown: false }}
         />
+
         <Stack.Screen
           name="auth"
           component={AuthNavigator}

@@ -5,6 +5,7 @@ import { Provider } from 'react-redux';
 import { persistor, store } from './store/store';
 import { PersistGate } from 'redux-persist/integration/react';
 import 'react-native-gesture-handler';
+import Toaster from './components/global/Toaster';
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
           <NavigationContainer>
             <RootNavigator />
           </NavigationContainer>
+          <Toaster />
         </PersistGate>
       </Provider>
     </SafeAreaProvider>

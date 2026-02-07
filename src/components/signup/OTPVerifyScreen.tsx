@@ -22,7 +22,8 @@ type Props = NativeStackScreenProps<
 >;
 const OTP_LENGTH = 4;
 
-const OTPVerifyScreen: React.FC<Props> = ({ navigation }) => {
+const OTPVerifyScreen: React.FC<Props> = ({ navigation, route }) => {
+
   const theme = getTheme();
   const [otp, setOtp] = useState(['', '', '', '']);
   const inputs = useRef<TextInput[]>([]);

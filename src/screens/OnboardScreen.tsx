@@ -15,6 +15,9 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamsList } from '../types/navigationTypes';
 import LinearGradient from 'react-native-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { healthCheckRoute } from '../api/api';
+import { useAppDispatch } from '../hooks/useAppDispatch';
+import { setHasSeenOnboarding } from '../store/slices/appSlice';
 
 // const ScreenData1 = [
 //   {
@@ -42,6 +45,15 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 const OnboardScreen = (props: NativeStackScreenProps<RootStackParamsList>) => {
   const theme = getTheme();
+  const dispatch = useAppDispatch();
+  healthCheckRoute()
+    .then(e => {
+      console.log(e);
+    })
+    .catch(e => {
+      console.log(e);
+    });
+
   return (
     <View style={[styles.main, { backgroundColor: theme.background }]}>
       <ImageBackground
@@ -79,11 +91,12 @@ const OnboardScreen = (props: NativeStackScreenProps<RootStackParamsList>) => {
             <View style={styles.btnWrapper}>
               <GradientButton
                 title="Get Started"
-                onPress={() =>
+                onPress={() => {
+                  dispatch(setHasSeenOnboarding(true));
                   props.navigation.replace('auth', {
                     screen: 'register',
-                  })
-                }
+                  });
+                }}
               />
             </View>
           </View>
