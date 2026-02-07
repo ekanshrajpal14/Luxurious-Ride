@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
+  Dimensions,
 } from 'react-native';
 import Navbar from '../global/Navbar';
 import GradientButton from '../customs/GradientButton';
@@ -16,52 +17,100 @@ import {
   AuthStackParamList,
   RootStackParamsList,
 } from '../../types/navigationTypes';
+import { useToast } from '../../hooks/useToast';
+import { useDispatch } from 'react-redux';
+import { verify } from '../../store/slices/authSlice';
+import { AppDispatch } from '../../store/store';
+import { useAppSelector } from '../../hooks/useAppSelector';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 type Props = NativeStackScreenProps<
   AuthStackParamList & RootStackParamsList,
   'otpVerify'
 >;
-const OTP_LENGTH = 4;
+
+const OTP_LENGTH = 6;
+const SCREEN_WIDTH = Dimensions.get('window').width;
+const INPUT_GAP = 5;
+const INPUT_SIZE =
+  (SCREEN_WIDTH - 24 * 2 - INPUT_GAP * (OTP_LENGTH - 1)) / OTP_LENGTH;
 
 const OTPVerifyScreen: React.FC<Props> = ({ navigation, route }) => {
-
   const theme = getTheme();
-  const [otp, setOtp] = useState(['', '', '', '']);
+  const { showError } = useToast();
+  const [otp, setOtp] = useState<string[]>(new Array(OTP_LENGTH).fill(''));
   const inputs = useRef<TextInput[]>([]);
+  const email = route?.params?.email_phone;
+  const dispatch = useDispatch<AppDispatch>();
+
+  const { isLoading, user, accessToken } = useAppSelector(
+    state => state.auth,
+  );
+
+  useEffect(() => {
+
+    inputs.current[0]?.focus();
+    if (!email) {
+      showError('Unknown Error, Please relogin with your email');
+      // navigation.replace('login');
+      // return null;
+    }
+  }, []);
+
+  useEffect(() => {
+    if (accessToken && user) {
+      console.log(accessToken, user);
+
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'mainApp' }],
+      });
+    }
+  }, [accessToken]);
 
   const handleChange = (text: string, index: number) => {
-    if (text.length > 1) return;
+    // Handle paste (full OTP)
+    if (text.length > 1) {
+      const chars = text.slice(0, OTP_LENGTH).split('');
+      const newOtp = [...otp];
+
+      chars.forEach((char, i) => {
+        newOtp[i] = char;
+      });
+
+      setOtp(newOtp);
+      inputs.current[chars.length - 1]?.focus();
+      return;
+    }
 
     const newOtp = [...otp];
     newOtp[index] = text;
     setOtp(newOtp);
 
-    // Move forward
     if (text && index < OTP_LENGTH - 1) {
       inputs.current[index + 1]?.focus();
     }
   };
 
   const handleBackspace = (index: number) => {
-    if (index > 0 && !otp[index]) {
+    if (!otp[index] && index > 0) {
       inputs.current[index - 1]?.focus();
     }
   };
 
-  const handleContinue = () => {
-    const code = otp.join('');
-    console.log('OTP:', code);
-    navigation.reset({
-      index: 0,
-      routes: [
-        {
-          name: 'mainApp',
-          // state: {
-          //   routes: [{ name: 'tabs' }],
-          // },
-        },
-      ],
-    });
-    // TODO verify OTP
+  const handleContinue = async () => {
+    try {
+      const code = otp.join('');
+
+      if (code.length !== OTP_LENGTH) {
+        showError('Please entry the otp');
+        return;
+      }
+      if (!email || !code) {
+        return;
+      }
+      dispatch(verify({ email_phone: email, otp: code }));
+    } catch (error) {}
   };
 
   return (
@@ -77,7 +126,7 @@ const OTPVerifyScreen: React.FC<Props> = ({ navigation, route }) => {
         </Text>
 
         <Text style={[styles.subtitle, { color: theme.subText }]}>
-          We have sent a code to email
+          We have sent a code to your email
         </Text>
 
         {/* OTP Inputs */}
@@ -105,22 +154,25 @@ const OTPVerifyScreen: React.FC<Props> = ({ navigation, route }) => {
                   handleBackspace(index);
                 }
               }}
+              textAlign="center"
+              selectionColor={theme.primary}
             />
           ))}
         </View>
 
-        {/* Continue Button */}
         <GradientButton
           title="Continue"
-          style={{ marginTop: 20 }}
+          style={{ marginTop: 24 }}
           onPress={handleContinue}
+          loading={isLoading}
         />
 
-        {/* Resend */}
         <TouchableOpacity style={{ marginTop: 18 }}>
           <Text style={{ color: theme.subText, textAlign: 'center' }}>
             Didn’t receive the OTP?{' '}
-            <Text style={{ color: theme.primary }}>Resend</Text>
+            <Text style={{ color: theme.primary, fontWeight: '600' }}>
+              Resend
+            </Text>
           </Text>
         </TouchableOpacity>
       </View>
@@ -133,14 +185,14 @@ export default OTPVerifyScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 24,
+    paddingHorizontal: 20,
     paddingTop: 12,
   },
   title: {
     fontSize: 22,
     fontWeight: '700',
     textAlign: 'center',
-    marginTop: 10,
+    marginTop: 12,
   },
   subtitle: {
     fontSize: 14,
@@ -153,11 +205,10 @@ const styles = StyleSheet.create({
     marginTop: 28,
   },
   otpInput: {
-    width: 64,
-    height: 64,
-    borderRadius: 14,
+    width: INPUT_SIZE,
+    height: INPUT_SIZE + 10,
+    borderRadius: 10,
     borderWidth: 1,
-    textAlign: 'center',
     fontSize: 22,
     fontWeight: '700',
   },

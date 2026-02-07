@@ -7,20 +7,52 @@ import {
   KeyboardAvoidingView,
   ScrollView,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { getTheme } from '../../theme/helper';
 import Navbar from '../../components/global/Navbar';
 import GradientButton from '../../components/customs/GradientButton';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AuthStackParamList } from '../../types/navigationTypes';
-import { Eye } from 'lucide-react-native';
 import Input from '../../components/customs/Input';
+import { useAppDispatch } from '../../hooks/useAppDispatch';
+import { useToast } from '../../hooks/useToast';
+import { loginUser } from '../../store/slices/authSlice';
+import { useAppSelector } from '../../hooks/useAppSelector';
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'login'>;
 
 const Login: React.FC<Props> = ({ navigation }) => {
+  const dispatch = useAppDispatch();
+  const { showError } = useToast();
   const theme = getTheme();
   const [remember, setRemember] = useState(true);
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const { accessToken, loginLoader, isUserVerified } = useAppSelector(
+    state => state.auth,
+  );
+  useEffect(() => {
+    if (!email && !password) return;
+    if (accessToken && isUserVerified) {
+      navigation.getParent()?.navigate('mainApp');
+    } else if (!accessToken && !isUserVerified) {
+      navigation.navigate('otpVerify', {
+        email_phone: email,
+      });
+    }
+    return () => {
+      setEmail('');
+      setPassword('');
+    };
+  }, [accessToken, isUserVerified]);
+  const handleLogin = async () => {
+    try {
+      if (!email.trim() || !password.trim()) {
+        return showError('Email and password cannot be empty');
+      }
+      dispatch(loginUser({ email_phone: email, password }));
+    } catch (error) {}
+  };
 
   return (
     <KeyboardAvoidingView
@@ -40,12 +72,21 @@ const Login: React.FC<Props> = ({ navigation }) => {
           Ready to hit the road.
         </Text>
 
-        <Input placeholder="Email Address" placeholderTextColor="#9a9a9a" />
+        <Input
+          placeholder="Email Address"
+          placeholderTextColor="#9a9a9a"
+          value={email}
+          keyboardType="email-address"
+          onChangeText={e => setEmail(e)}
+          style={{textTransform:"lowercase"}}
+        />
 
         <Input
           isPassword
           placeholder="Password"
           placeholderTextColor="#9a9a9a"
+          value={password}
+          onChangeText={e => setPassword(e)}
           secureTextEntry={true}
           style={[styles.passwordInput, { color: theme.text }]}
         />
@@ -79,11 +120,12 @@ const Login: React.FC<Props> = ({ navigation }) => {
         {/* Primary button */}
         <GradientButton
           title="Login"
-          onPress={() => navigation.navigate('otpVerify')}
+          onPress={handleLogin}
+          loading={loginLoader}
         />
 
         {/* Secondary button */}
-        <GradientButton
+        {/* <GradientButton
           title="Sign up"
           gradient1="transparent"
           gradient2="transparent"
@@ -94,7 +136,7 @@ const Login: React.FC<Props> = ({ navigation }) => {
             marginTop: 12,
           }}
           onPress={() => navigation.navigate('register')}
-        />
+        /> */}
 
         {/* Divider */}
         <View style={styles.divider}>

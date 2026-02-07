@@ -1,13 +1,12 @@
-import { AuthResponse } from '../types/auth/authTypes';
-import { RegisterPayload } from '../types/auth/requestTypes';
+import { AuthResponse, LoginAuthResp } from '../types/auth/authTypes';
+import { LoginPayload, OtpPayload, RegisterPayload } from '../types/auth/requestTypes';
 import axiosInstance from './axiosInstance';
-import { authEndpoints, healthCheck } from './endpoint';
+import { authEndpoints } from './endpoint';
+import { ApiResponse } from './types';
 
-type ApiResponse<T> = {
-  success: boolean;
-  message: string;
-  data: T;
-  statusCode:number;
+
+export const healthCheckRoute = async () => {
+  const data = await axiosInstance.get("/");
 };
 
 export const registerUserApi = async (
@@ -24,6 +23,24 @@ export const registerUserApi = async (
   }
 };
 
-export const healthCheckRoute = async () => {
-  const data = await axiosInstance.get(healthCheck);
+export const verifyOTPApi = async (
+  payload: OtpPayload,
+): Promise<ApiResponse<LoginAuthResp>> => {
+  try {
+    const { data } = await axiosInstance.post(authEndpoints.otpVerify, payload);
+    return data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const loginApi = async (
+  payload: LoginPayload,
+): Promise<ApiResponse<LoginAuthResp>> => {
+  try {
+    const { data } = await axiosInstance.post(authEndpoints.login, payload);
+    return data;
+  } catch (error) {
+    throw error;
+  }
 };

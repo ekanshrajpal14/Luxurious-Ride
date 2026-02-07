@@ -23,10 +23,12 @@ import {
   Pencil,
 } from 'lucide-react-native';
 import { getTheme } from '../../theme/helper';
+import { logout } from '../../store/slices/authSlice';
+import { useAppDispatch } from '../../hooks/useAppDispatch';
 
 const CustomDrawerContent = ({ navigation }: DrawerContentComponentProps) => {
   const theme = getTheme();
-
+  const dispatch = useAppDispatch();
   const Item = ({
     icon,
     label,
@@ -89,7 +91,12 @@ const CustomDrawerContent = ({ navigation }: DrawerContentComponentProps) => {
       <Item icon={<HelpCircle size={20} />} label="Help Support" />
 
       {/* LOGOUT */}
-      <TouchableOpacity style={styles.logout}>
+      <TouchableOpacity
+        style={styles.logout}
+        onPress={() => {
+          dispatch(logout());
+        }}
+      >
         <LogOut size={20} color="red" />
         <Text style={styles.logoutText}>Log out</Text>
       </TouchableOpacity>

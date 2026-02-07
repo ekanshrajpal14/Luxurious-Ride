@@ -5,18 +5,30 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamsList } from '../types/navigationTypes';
 import { textSizes } from '../theme/text';
 import { useAppSelector } from '../hooks/useAppSelector';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
+const checkStorage = async () => {
+  const keys = await AsyncStorage.getAllKeys();
+  const result = await AsyncStorage.multiGet(keys);
+  console.log(result);
+};
 const SplashScreen = (props: NativeStackScreenProps<RootStackParamsList>) => {
-  const HasSeenOnboarding = useAppSelector(
-    state => state.app.hasSeenOnboarding,
-  );
+  checkStorage();
   const theme = getTheme();
-  setTimeout(() => {
-    props.navigation.reset({
-      index: 0,
-      routes: [{ name: !HasSeenOnboarding ? 'onboard' : 'auth' }],
-    });
-  }, 1000);
+  // setTimeout(() => {
+  //   props.navigation.reset({
+  //     index: 0,
+  //     routes: [
+  //       {
+  //         name: !app.hasSeenOnboarding
+  //           ? 'onboard'
+  //           : auth.accessToken
+  //           ? 'mainApp'
+  //           : 'auth',
+  //       },
+  //     ],
+  //   });
+  // }, 1000);
 
   return (
     <View

@@ -44,9 +44,9 @@ const Register: React.FC<Props> = ({ navigation }) => {
       });
       if (!resp.success) {
         showError('Failed to create account');
-        return
+        return;
       }
-      showSuccess(resp.message)
+      showSuccess(resp.message);
       navigation.navigate('otpVerify', {
         email_phone: email,
       });
@@ -81,6 +81,7 @@ const Register: React.FC<Props> = ({ navigation }) => {
           placeholderTextColor="#9a9a9a"
           value={email}
           onChangeText={val => setEmail(val)}
+          style={{ textTransform: 'lowercase' }}
         />
 
         <Input
@@ -103,7 +104,7 @@ const Register: React.FC<Props> = ({ navigation }) => {
         />
 
         {/* Secondary button */}
-        <GradientButton
+        {/* <GradientButton
           title="Login"
           gradient1="transparent"
           gradient2="transparent"
@@ -115,7 +116,7 @@ const Register: React.FC<Props> = ({ navigation }) => {
             borderRadius: 24,
           }}
           onPress={() => navigation.navigate('login')}
-        />
+        /> */}
 
         {/* Divider */}
         <View style={styles.divider}>

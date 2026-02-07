@@ -1,58 +1,54 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { registerUserApi } from '../../api/api';
-/* =====================
-   Types
-===================== */
-
-export type User = {
-  id: string;
-  name: string;
-  email: string;
-  token: string;
-};
-
-type RegisterPayload = {
-  name: string;
-  email: string;
-  password: string;
-};
+import { loginApi, verifyOTPApi } from '../../api/api';
+import { LoginAuthResp, User } from '../../types/auth/authTypes';
+import { LoginPayload, OtpPayload } from '../../types/auth/requestTypes';
+import { ApiResponse } from '../../api/types';
 
 type AuthState = {
   user: User | null;
+  accessToken: string | null;
   isLoading: boolean;
   error: string | null;
+  isExistingUser: boolean;
+  isUserVerified: boolean;
+  loginLoader:boolean;
 };
-
-/* =====================
-   Initial State
-===================== */
 
 const initialState: AuthState = {
   user: null,
+  accessToken: null,
   isLoading: false,
   error: null,
+  isExistingUser: false,
+  isUserVerified: false,
+  loginLoader:false
 };
 
-/* =====================
-   Async Thunks
-===================== */
-
-export const registerUser = createAsyncThunk<
-  User,
-  RegisterPayload,
+export const verify = createAsyncThunk<
+  ApiResponse<LoginAuthResp>,
+  OtpPayload,
   { rejectValue: string }
->('auth/register', async (payload, { rejectWithValue }) => {
+>('auth/verify', async (payload, { rejectWithValue }) => {
   try {
-    const data = await registerUserApi(payload);
-    return data.data;
+    const response = await verifyOTPApi(payload);
+    return response;
   } catch (error: any) {
-    return rejectWithValue(error?.message || 'Registration failed');
+    return rejectWithValue(error?.message || 'Verification failed');
   }
 });
 
-/* =====================
-   Slice
-===================== */
+export const loginUser = createAsyncThunk<
+  ApiResponse<LoginAuthResp>,
+  LoginPayload,
+  { rejectValue: string }
+>('auth/login', async (payload, { rejectWithValue }) => {
+  try {
+    const response = await loginApi(payload);
+    return response;
+  } catch (error: any) {
+    return rejectWithValue(error?.message || 'Login failed');
+  }
+});
 
 const authSlice = createSlice({
   name: 'auth',
@@ -61,6 +57,8 @@ const authSlice = createSlice({
     logout(state) {
       state.user = null;
       state.error = null;
+      state.accessToken = null;
+      console.log('err');
     },
     clearAuthError(state) {
       state.error = null;
@@ -68,18 +66,41 @@ const authSlice = createSlice({
   },
   extraReducers: builder => {
     builder
-      .addCase(registerUser.pending, state => {
+      .addCase(verify.pending, state => {
         state.isLoading = true;
         state.error = null;
       })
-      .addCase(registerUser.fulfilled, (state, action: PayloadAction<User>) => {
+      .addCase(
+        verify.fulfilled,
+        (state, action: PayloadAction<ApiResponse<LoginAuthResp>>) => {
+          state.isLoading = false;
+          state.user = action.payload.data.user;
+          state.accessToken = action.payload.data?.accessToken || null;
+          state.isExistingUser = true;
+          state.isUserVerified = action.payload.data.isUserVerified;
+        },
+      )
+      .addCase(verify.rejected, (state, action) => {
         state.isLoading = false;
-        state.user = action.payload;
-      })
-      .addCase(registerUser.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload || 'Something went wrong';
-      });
+        // state.error = action.payload || 'Something went wrong';
+      }),
+      builder
+        .addCase(loginUser.pending, state => {
+          state.loginLoader = true;
+        })
+        .addCase(
+          loginUser.fulfilled,
+          (state, action: PayloadAction<ApiResponse<LoginAuthResp>>) => {
+            state.loginLoader = false;
+            state.user = action.payload.data.user;
+            state.accessToken = action.payload.data?.accessToken || null;
+            state.isExistingUser = true;
+            state.isUserVerified = action.payload.data.isUserVerified;
+          },
+        )
+        .addCase(loginUser.rejected, (state, action) => {
+          state.loginLoader = false;
+        });
   },
 });
 

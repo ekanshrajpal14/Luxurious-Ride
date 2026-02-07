@@ -4,7 +4,7 @@ import { BackendError } from './types';
 import { toastError } from '../utils/toastService';
 const axiosInstance = axios.create({
   // baseURL: 'https://0msnrqd1-3000.inc1.devtunnels.ms',
-  baseURL: 'http://10.60.228.206:3000',
+  baseURL: 'http://192.168.1.14:3000',
   timeout: 30000,
 });
 

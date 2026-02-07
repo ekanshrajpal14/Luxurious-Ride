@@ -20,3 +20,6 @@ export interface AuthResponse {
   user: User;
   isUserVerified: boolean;
 }
+export interface LoginAuthResp extends AuthResponse {
+  accessToken: string;
+}
