@@ -4,7 +4,8 @@ import { BackendError } from './types';
 import { toastError } from '../utils/toastService';
 const axiosInstance = axios.create({
   // baseURL: 'https://0msnrqd1-3000.inc1.devtunnels.ms',
-  baseURL: 'http://192.168.1.14:3000',
+  // baseURL: 'https://maybach-backend.onrender.com',
+  baseURL: 'http://192.168.1.30:3000',
   timeout: 30000,
 });
 
@@ -14,7 +15,7 @@ axiosInstance.interceptors.request.use(
     // Example: attach auth token
     // const token = await AsyncStorage.getItem('token');
     // if (token) config.headers.Authorization = `Bearer ${token}`;
-
+    
     return config;
   },
   error => Promise.reject(error),

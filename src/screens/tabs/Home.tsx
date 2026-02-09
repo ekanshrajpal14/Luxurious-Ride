@@ -8,68 +8,76 @@ import {
   ScrollView,
   TouchableOpacity,
   FlatList,
+  ActivityIndicator,
 } from 'react-native';
 import { getTheme } from '../../theme/helper';
 import { Filter, Search } from 'lucide-react-native';
 import CarCard from '../../components/customs/CarCard';
+import { useAppSelector } from '../../hooks/useAppSelector';
+import { brandImages } from '../../constants/brandImages';
+import BrandShimmer from '../../shimmers/BrandShimmer';
+import { useAppDispatch } from '../../hooks/useAppDispatch';
+import { fetchCars } from '../../store/slices/carSlice';
+import Loader from '../../components/customs/Loader';
+import CarCardShimmer from '../../shimmers/CarCardShimmer';
 
-const brands = [
-  {
-    id: 1,
-    name: 'BENTLEY',
-    logo: require('../../../assets/images/bentley.png'),
-  },
-  {
-    id: 2,
-    name: 'BMW',
-    logo: require('../../../assets/images/bmw.png'),
-  },
-  { id: 3, name: 'AUDI', logo: require('../../../assets/images/audi.png') },
-  {
-    id: 4,
-    name: 'MAYBACH',
-    logo: require('../../../assets/images/maybach.png'),
-  },
-];
+// const cars = [
+//   {
+//     id: 1,
+//     name: 'Ferrari-FF',
+//     image: require('../../../assets/images/bgimage.jpg'),
+//     price: '$200/day',
+//     seats: '4 Seats',
+//     location: 'Washington DC',
+//   },
+//   {
+//     id: 2,
+//     name: 'Tesla Model S',
+//     image: require('../../../assets/images/bgimage.jpg'),
+//     price: '$100/day',
+//     seats: '5 Seats',
+//     location: 'Chicago, USA',
+//   },
 
-const cars = [
-  {
-    id: 1,
-    name: 'Ferrari-FF',
-    image: require('../../../assets/images/bgimage.jpg'),
-    price: '$200/day',
-    seats: '4 Seats',
-    location: 'Washington DC',
-  },
-  {
-    id: 2,
-    name: 'Tesla Model S',
-    image: require('../../../assets/images/bgimage.jpg'),
-    price: '$100/day',
-    seats: '5 Seats',
-    location: 'Chicago, USA',
-  },
-
-  {
-    id: Date.now() + Math.floor(Math.random()),
-    name: 'Tesla Model S',
-    image: require('../../../assets/images/bgimage.jpg'),
-    price: '$100/day',
-    seats: '5 Seats',
-    location: 'Chicago, USA',
-  },
-  {
-    id: Date.now() + Math.floor(Math.random() * 1100),
-    name: 'Tesla Model S',
-    image: require('../../../assets/images/bgimage.jpg'),
-    price: '$100/day',
-    seats: '5 Seats',
-    location: 'Chicago, USA',
-  },
-];
+//   {
+//     id: Date.now() + Math.floor(Math.random()),
+//     name: 'Tesla Model S',
+//     image: require('../../../assets/images/bgimage.jpg'),
+//     price: '$100/day',
+//     seats: '5 Seats',
+//     location: 'Chicago, USA',
+//   },
+//   {
+//     id: Date.now() + Math.floor(Math.random() * 1100),
+//     name: 'Tesla Model S',
+//     image: require('../../../assets/images/bgimage.jpg'),
+//     price: '$100/day',
+//     seats: '5 Seats',
+//     location: 'Chicago, USA',
+//   },
+// ];
 
 export default function Home() {
   const theme = getTheme();
+  const {
+    brands,
+    brandLoading,
+    cars,
+    carLoading,
+    carCurrentPage,
+    carTotalPages,
+  } = useAppSelector(state => state.cars);
+  const dispatch = useAppDispatch();
+
+  const handleLoadMore = () => {
+    // ⛔ Prevent duplicate calls
+    if (carLoading) return;
+
+    // ⛔ Stop when last page reached
+    if (carCurrentPage >= carTotalPages) return;
+
+    dispatch(fetchCars({ page: carCurrentPage + 1 }));
+  };
 
   return (
     <View style={[styles.root, { backgroundColor: theme.background }]}>
@@ -99,16 +107,26 @@ export default function Home() {
         <Text style={[styles.sectionTitle, { color: theme.text }]}>Brands</Text>
 
         <View style={styles.brandsRow}>
-          {brands.map(item => (
-            <View key={item.id} style={styles.brandItem}>
-              <View style={[styles.brandIcon, { backgroundColor: theme.card }]}>
-                <Image source={item.logo} style={styles.brandImage} />
+          {brandLoading ? (
+            <BrandShimmer />
+          ) : (
+            brands &&
+            brands.map((item, i) => (
+              <View key={i} style={styles.brandItem}>
+                <View
+                  style={[styles.brandIcon, { backgroundColor: theme.card }]}
+                >
+                  <Image
+                    source={brandImages[item.brand_name]}
+                    style={styles.brandImage}
+                  />
+                </View>
+                <Text style={[styles.brandText, { color: theme.subText }]}>
+                  {item.brand_name}
+                </Text>
               </View>
-              <Text style={[styles.brandText, { color: theme.subText }]}>
-                {item.name}
-              </Text>
-            </View>
-          ))}
+            ))
+          )}
         </View>
 
         {/* Best Cars */}
@@ -120,14 +138,33 @@ export default function Home() {
         </View>
 
         <View style={styles.cardRow}>
-          <FlatList
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            data={cars}
-            keyExtractor={item => item.id.toString()}
-            renderItem={({ item }) => <CarCard />}
-            contentContainerStyle={{ gap:20, paddingHorizontal: 2 }}
-          />
+          {cars.length === 0 && carLoading ? (
+            <View
+              style={{
+                flex: 1,
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+              }}
+            >
+              {[1, 2].map(i => (
+                <CarCardShimmer key={i} />
+              ))}
+            </View>
+          ) : (
+            <FlatList
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              data={cars}
+              keyExtractor={item => item.id.toString()}
+              renderItem={({ item }) => <CarCard car={item} />}
+              contentContainerStyle={{ gap: 20, paddingHorizontal: 2 }}
+              onEndReached={handleLoadMore}
+              onEndReachedThreshold={0.7}
+              ListFooterComponent={
+                carLoading && cars.length > 0 ? <CarCardShimmer /> : null
+              }
+            />
+          )}
         </View>
       </ScrollView>
     </View>
@@ -235,8 +272,10 @@ const styles = StyleSheet.create({
   },
 
   brandText: {
-    marginTop: 6,
+    marginTop: 8,
     fontSize: 12,
+    includeFontPadding: false,
+    textTransform: 'uppercase',
   },
 
   sectionHeader: {
@@ -248,7 +287,7 @@ const styles = StyleSheet.create({
   viewAll: {
     color: '#888',
     fontSize: 13,
-    marginTop:10
+    marginTop: 10,
   },
 
   cardRow: {

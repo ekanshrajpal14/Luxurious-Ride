@@ -1,4 +1,4 @@
-import React, { SetStateAction, useEffect } from 'react';
+import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import SplashScreen from '../screens/SplashScreen';
 import { RootStackParamsList } from '../types/navigationTypes';

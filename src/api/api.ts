@@ -1,12 +1,16 @@
 import { AuthResponse, LoginAuthResp } from '../types/auth/authTypes';
-import { LoginPayload, OtpPayload, RegisterPayload } from '../types/auth/requestTypes';
+import {
+  LoginPayload,
+  OtpPayload,
+  RegisterPayload,
+} from '../types/auth/requestTypes';
+import { FetchBrands, FetchCars } from '../types/cars/carTypes';
 import axiosInstance from './axiosInstance';
-import { authEndpoints } from './endpoint';
+import { authEndpoints, carEndpoints } from './endpoint';
 import { ApiResponse } from './types';
 
-
 export const healthCheckRoute = async () => {
-  const data = await axiosInstance.get("/");
+  const data = await axiosInstance.get('/');
 };
 
 export const registerUserApi = async (
@@ -39,6 +43,27 @@ export const loginApi = async (
 ): Promise<ApiResponse<LoginAuthResp>> => {
   try {
     const { data } = await axiosInstance.post(authEndpoints.login, payload);
+    return data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const fetchBrandsApi = async (): Promise<ApiResponse<FetchBrands>> => {
+  try {
+    const { data } = await axiosInstance.get(carEndpoints.brands);
+    return data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const fetchCarsApi = async (
+  page: number = 1,
+): Promise<ApiResponse<FetchCars>> => {
+  try {
+    // await new Promise(resolve => setTimeout(resolve, 2000));
+    const { data } = await axiosInstance.get(carEndpoints.cars(page));
     return data;
   } catch (error) {
     throw error;

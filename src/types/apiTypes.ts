@@ -4,3 +4,8 @@ export type AuthEnpoints = {
   logout: string;
   otpVerify: string;
 };
+
+export type CarEndpoints = {
+  brands: string;
+  cars: (page?: number) => string;
+};

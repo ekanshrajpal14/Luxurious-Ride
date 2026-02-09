@@ -23,3 +23,4 @@ export interface AuthResponse {
 export interface LoginAuthResp extends AuthResponse {
   accessToken: string;
 }
+
