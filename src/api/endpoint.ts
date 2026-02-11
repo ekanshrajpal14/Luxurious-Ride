@@ -10,4 +10,5 @@ export const authEndpoints: AuthEnpoints = {
 export const carEndpoints: CarEndpoints = {
   brands: '/api/cars/fetch-brands',
   cars: page => `/api/cars/fetch-cars?page=${page}`,
+  availableCars:page=> `/api/cars/check-availability?page=${page}`,
 };

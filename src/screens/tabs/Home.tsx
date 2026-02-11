@@ -21,42 +21,6 @@ import { fetchCars } from '../../store/slices/carSlice';
 import Loader from '../../components/customs/Loader';
 import CarCardShimmer from '../../shimmers/CarCardShimmer';
 
-// const cars = [
-//   {
-//     id: 1,
-//     name: 'Ferrari-FF',
-//     image: require('../../../assets/images/bgimage.jpg'),
-//     price: '$200/day',
-//     seats: '4 Seats',
-//     location: 'Washington DC',
-//   },
-//   {
-//     id: 2,
-//     name: 'Tesla Model S',
-//     image: require('../../../assets/images/bgimage.jpg'),
-//     price: '$100/day',
-//     seats: '5 Seats',
-//     location: 'Chicago, USA',
-//   },
-
-//   {
-//     id: Date.now() + Math.floor(Math.random()),
-//     name: 'Tesla Model S',
-//     image: require('../../../assets/images/bgimage.jpg'),
-//     price: '$100/day',
-//     seats: '5 Seats',
-//     location: 'Chicago, USA',
-//   },
-//   {
-//     id: Date.now() + Math.floor(Math.random() * 1100),
-//     name: 'Tesla Model S',
-//     image: require('../../../assets/images/bgimage.jpg'),
-//     price: '$100/day',
-//     seats: '5 Seats',
-//     location: 'Chicago, USA',
-//   },
-// ];
-
 export default function Home() {
   const theme = getTheme();
   const {

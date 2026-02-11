@@ -5,6 +5,8 @@ import DrawerNavigator from './DrawerNavigator';
 import EditScreen from '../screens/main/EditScreen';
 import { useAppDispatch } from '../hooks/useAppDispatch';
 import { fetchBrandsData, fetchCars } from '../store/slices/carSlice';
+import AvailableCars from '../screens/main/AvailableCars';
+import Booking from '../screens/main/Booking';
 
 const Stack = createNativeStackNavigator<MainAppStackParamList>();
 const MainAppNavigator = () => {
@@ -25,6 +27,17 @@ const MainAppNavigator = () => {
         name="editProfile"
         component={EditScreen}
         options={{ title: 'Edit Your Profile' }}
+      />
+
+      <Stack.Screen
+        name="availableCars"
+        component={AvailableCars}
+        options={{ title: 'Available Cars' }}
+      />
+      <Stack.Screen
+        name="booking"
+        component={Booking}
+        options={{ title: 'Booking Your Car' }}
       />
     </Stack.Navigator>
   );

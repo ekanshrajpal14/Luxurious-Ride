@@ -27,7 +27,7 @@ const RootNavigator: React.FC<RootNavigatorProps> = ({
 
   setTimeout(() => {
     setIsAppReady(true);
-  }, 1000);
+  }, 500);
 
   return (
     <>

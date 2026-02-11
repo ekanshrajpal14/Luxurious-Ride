@@ -6,93 +6,171 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
+  KeyboardAvoidingView,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import DatePicker from 'react-native-date-picker';
+import { getTheme } from '../../theme/helper';
+import GradientButton from '../../components/customs/GradientButton';
+import { Calendar1, Clock } from 'lucide-react-native';
+import {
+  MainAppStackParamList,
+  TabStackParamList,
+} from '../../types/navigationTypes';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useNavigation } from '@react-navigation/native';
+import { useToast } from '../../hooks/useToast';
+type NavType = NativeStackNavigationProp<MainAppStackParamList>;
+const Search = () => {
+  const navigation = useNavigation<NavType>();
+  const theme = getTheme();
+  const [tripType, setTripType] = useState<'LOCAL' | 'ROUND_TRIP'>('LOCAL');
+  const { showError } = useToast();
+  // Time state
+  const oneHourFromNow = new Date();
+  oneHourFromNow.setHours(oneHourFromNow.getHours() + 1);
+  const [pickupTime, setPickupTime] = useState<Date>(oneHourFromNow);
 
-export default function Search() {
-  const [tripType, setTripType] = useState('oneway');
-
+  // Modal visibility
+  const [showCalendar, setShowCalendar] = useState(false);
+  const [showTimePicker, setShowTimePicker] = useState(false);
+  const [pickupDate, setPickupDate] = useState<Date>(new Date());
+  const [pickupLocation, setPickupLocation] = useState<string>('');
+  const handleExplore = () => {
+    if (!tripType || !pickupLocation || !pickupDate || !pickupTime) {
+      return showError('All Fields are required');
+    }
+    navigation.navigate('availableCars', {
+      tripType,
+      pickupLocation,
+      pickupDate: pickupDate.toISOString().split('T')[0],
+      pickupTime: pickupTime.toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+      }),
+    });
+  };
   return (
-    <View style={styles.root}>
-      <ScrollView showsVerticalScrollIndicator={false}>
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>Book your car in seconds</Text>
-          <Icon name="account-circle" size={28} color="#4AA3C7" />
-        </View>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={'padding'}
+      keyboardVerticalOffset={80}
+    >
+      <View style={styles.root}>
+        <ScrollView showsVerticalScrollIndicator={false}>
+          {/* Header */}
+          <View style={styles.header}>
+            <Text style={styles.headerTitle}>Book your car in seconds</Text>
+          </View>
 
-        {/* Card */}
-        <View style={styles.card}>
-          {/* Tabs */}
-          <View style={styles.tabs}>
-            <TouchableOpacity
-              style={[styles.tab, tripType === 'oneway' && styles.activeTab]}
-              onPress={() => setTripType('oneway')}
-            >
-              <Text
+          <View style={styles.card}>
+            {/* Tabs */}
+            <View style={styles.tabs}>
+              {['LOCAL', 'ROUND_TRIP'].map(type => (
+                <TouchableOpacity
+                  key={type}
+                  style={[
+                    styles.tab,
+                    tripType === type && { backgroundColor: theme.primary },
+                  ]}
+                  onPress={() => {
+                    setTripType(type as any);
+                    // setEndDate(null);
+                  }}
+                >
+                  <Text
+                    style={[
+                      styles.tabText,
+                      tripType === type && styles.activeTabText,
+                    ]}
+                  >
+                    {type.replace('_', ' ')}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            {/* FROM */}
+            <View style={styles.inputRow}>
+              <Text style={styles.label}>FROM</Text>
+              <TextInput
+                placeholder="Enter Pickup Location"
+                placeholderTextColor={theme.grey}
+                value={pickupLocation}
+                onChangeText={e => setPickupLocation(e)}
                 style={[
-                  styles.tabText,
-                  tripType === 'oneway' && styles.activeTabText,
+                  styles.input,
+                  { color: theme.text, includeFontPadding: false },
                 ]}
-              >
-                ONE WAY
+              />
+            </View>
+
+            {/* DATE */}
+            <TouchableOpacity
+              style={styles.inputRow}
+              onPress={() => setShowCalendar(true)}
+            >
+              <Text style={styles.label}>PICK UP</Text>
+              <Text style={styles.value}>
+                {pickupDate.toISOString().split('T')[0]}
               </Text>
+              <Calendar1 size={20} color={theme.primary} />
             </TouchableOpacity>
 
+            {/* TIME */}
             <TouchableOpacity
-              style={[styles.tab, tripType === 'roundtrip' && styles.activeTab]}
-              onPress={() => setTripType('roundtrip')}
+              style={styles.inputRow}
+              onPress={() => setShowTimePicker(true)}
             >
-              <Text
-                style={[
-                  styles.tabText,
-                  tripType === 'roundtrip' && styles.activeTabText,
-                ]}
-              >
-                ROUND TRIP
+              <Text style={styles.label}>PICK UP AT</Text>
+              <Text style={styles.value}>
+                {pickupTime.toLocaleTimeString([], {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })}
               </Text>
+              <Clock size={20} color={theme.primary} />
             </TouchableOpacity>
-          </View>
 
-          {/* From */}
-          <View style={styles.inputRow}>
-            <Text style={styles.label}>FROM</Text>
-            <TextInput
-              placeholder="Enter Pickup Location"
-              style={styles.input}
-            />
-           
+            {/* CTA */}
+            <View style={{ marginTop: 20 }}>
+              <GradientButton title="Explore Cabs" onPress={handleExplore} />
+            </View>
           </View>
+        </ScrollView>
+        <DatePicker
+          modal
+          open={showCalendar}
+          date={pickupDate} // Date object
+          mode="date"
+          theme={theme.mode}
+          minimumDate={new Date()} // disable past dates
+          onConfirm={date => {
+            setShowCalendar(false);
+            setPickupDate(date);
+          }}
+          onCancel={() => setShowCalendar(false)}
+        />
 
-          {/* To */}
-          <View style={styles.inputRow}>
-            <Text style={styles.label}>TO</Text>
-            <TextInput placeholder="Enter Drop Location" style={styles.input} />
-          </View>
-
-          {/* Pickup Date */}
-          <View style={styles.inputRow}>
-            <Text style={styles.label}>PICK UP</Text>
-            <Text style={styles.value}>06-02-2026</Text>
-            {/* <Icon name="keyboard-arrow-down" size={22} color="#4AA3C7" /> */}
-          </View>
-
-          {/* Pickup Time */}
-          <View style={styles.inputRow}>
-            <Text style={styles.label}>PICK UP AT</Text>
-            <Text style={styles.value}>07:00 AM</Text>
-            {/* <Icon name="keyboard-arrow-down" size={22} color="#4AA3C7" /> */}
-          </View>
-
-          {/* Button */}
-          <TouchableOpacity style={styles.ctaButton}>
-            <Text style={styles.ctaText}>EXPLORE CARS</Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-    </View>
+        <DatePicker
+          modal
+          style={{ backgroundColor: '#fff' }}
+          open={showTimePicker}
+          date={pickupTime}
+          mode="time"
+          theme={theme.mode}
+          minimumDate={oneHourFromNow}
+          onConfirm={date => {
+            setShowTimePicker(false);
+            setPickupTime(date);
+          }}
+          onCancel={() => setShowTimePicker(false)}
+        />
+      </View>
+    </KeyboardAvoidingView>
   );
-}
+};
+
+export default Search;
 
 const styles = StyleSheet.create({
   root: {
@@ -100,36 +178,20 @@ const styles = StyleSheet.create({
     backgroundColor: '#F4F6F8',
     padding: 16,
   },
-
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
     marginTop: 10,
+    alignItems: 'center',
   },
-
   headerTitle: {
     fontSize: 20,
     fontWeight: '700',
-    width:"100%",
-    textAlign: 'center',
   },
-
-  subtitle: {
-    marginTop: 10,
-    textAlign: 'center',
-    fontWeight: '600',
-    color: '#444',
-  },
-
   card: {
     backgroundColor: '#fff',
     borderRadius: 12,
     padding: 16,
-    marginTop: 16,
-    elevation: 4,
+    marginTop: 26,
   },
-
   tabs: {
     flexDirection: 'row',
     borderWidth: 1,
@@ -138,53 +200,40 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     marginBottom: 16,
   },
-
   tab: {
     flex: 1,
     paddingVertical: 10,
     alignItems: 'center',
     backgroundColor: '#f5f5f5',
   },
-
-  activeTab: {
-    backgroundColor: '#4AA3C7',
-  },
-
   tabText: {
     fontWeight: '600',
     color: '#777',
   },
-
   activeTabText: {
     color: '#fff',
   },
-
   inputRow: {
     flexDirection: 'row',
     alignItems: 'center',
     borderBottomWidth: 1,
     borderColor: '#eee',
     paddingVertical: 12,
+    marginVertical: 10,
   },
-
   label: {
-    width: 70,
+    width: 80,
     fontWeight: '600',
     color: '#555',
   },
-
   input: {
     flex: 1,
     fontSize: 14,
-    color: '#000',
   },
-
   value: {
     flex: 1,
     fontSize: 14,
-    color: '#000',
   },
-
   ctaButton: {
     backgroundColor: '#F37021',
     paddingVertical: 14,
@@ -192,28 +241,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 20,
   },
-
   ctaText: {
     color: '#fff',
     fontWeight: '700',
     fontSize: 15,
   },
-
-  bottomTabs: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginTop: 20,
-    paddingVertical: 10,
+  modalBackdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    justifyContent: 'center',
+  },
+  modalContent: {
     backgroundColor: '#fff',
-    borderRadius: 12,
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    padding: 16,
   },
-
-  bottomTab: {
+  modalClose: {
     alignItems: 'center',
-  },
-
-  bottomTabText: {
-    fontSize: 11,
-    marginTop: 4,
+    marginTop: 10,
   },
 });

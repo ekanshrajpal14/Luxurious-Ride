@@ -5,7 +5,7 @@ import { toastError } from '../utils/toastService';
 const axiosInstance = axios.create({
   // baseURL: 'https://0msnrqd1-3000.inc1.devtunnels.ms',
   // baseURL: 'https://maybach-backend.onrender.com',
-  baseURL: 'http://192.168.1.30:3000',
+  baseURL: 'http://192.168.1.19:3000',
   timeout: 30000,
 });
 

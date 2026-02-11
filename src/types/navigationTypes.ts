@@ -23,6 +23,18 @@ export type DrawerStachParamList = {
 export type MainAppStackParamList = {
   drawer: NavigatorScreenParams<DrawerStachParamList>;
   editProfile: undefined;
+  availableCars: {
+    tripType: string;
+    pickupLocation: string;
+    pickupDate: string;
+    pickupTime: string;
+  };
+  booking: {
+    car_id: number;
+    pickupLocation: string;
+    pickupDate: string;
+    pickupTime: string;
+  };
 };
 
 export type TabStackParamList = {

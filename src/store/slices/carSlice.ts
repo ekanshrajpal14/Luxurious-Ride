@@ -23,7 +23,7 @@ const initialState: CarState = {
   cars: [],
   carLoading: false,
   carError: null,
-  carCurrentPage: 1,
+  carCurrentPage: 0,
   carTotalPages: 1,
 };
 

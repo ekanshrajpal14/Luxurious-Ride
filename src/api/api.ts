@@ -1,5 +1,6 @@
 import { AuthResponse, LoginAuthResp } from '../types/auth/authTypes';
 import {
+  AvailableCarsTypes,
   LoginPayload,
   OtpPayload,
   RegisterPayload,
@@ -64,6 +65,23 @@ export const fetchCarsApi = async (
   try {
     // await new Promise(resolve => setTimeout(resolve, 2000));
     const { data } = await axiosInstance.get(carEndpoints.cars(page));
+    return data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const fetchAvailableCars = async (
+  page: number = 1,
+  body: AvailableCarsTypes,
+): Promise<ApiResponse<FetchCars>> => {
+  try {
+    // await new Promise(resolve => setTimeout(resolve, 2000));
+
+    const { data } = await axiosInstance.post(
+      carEndpoints.availableCars(page),
+      body,
+    );
     return data;
   } catch (error) {
     throw error;

@@ -8,4 +8,5 @@ export type AuthEnpoints = {
 export type CarEndpoints = {
   brands: string;
   cars: (page?: number) => string;
+  availableCars: (page?: number) => string;
 };

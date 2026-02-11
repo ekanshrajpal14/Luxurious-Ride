@@ -12,3 +12,11 @@ export type LoginPayload = {
   email_phone: string;
   password: string;
 };
+
+export type AvailableCarsTypes = {
+  pickup_location: string;
+  trip_type: string;
+  pickup_date: string;
+  pickup_time: string;
+  sort_by: string;
+};
