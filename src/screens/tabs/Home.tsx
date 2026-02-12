@@ -20,6 +20,9 @@ import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { fetchCars } from '../../store/slices/carSlice';
 import Loader from '../../components/customs/Loader';
 import CarCardShimmer from '../../shimmers/CarCardShimmer';
+import firebase from '@react-native-firebase/app';
+import { useFCMToken } from '../../hooks/useFCMToken';
+import useNotificationNavigation from '../../hooks/useNotificationNavigation';
 
 export default function Home() {
   const theme = getTheme();
@@ -31,8 +34,8 @@ export default function Home() {
     carCurrentPage,
     carTotalPages,
   } = useAppSelector(state => state.cars);
-  const dispatch = useAppDispatch();
 
+  const dispatch = useAppDispatch();
   const handleLoadMore = () => {
     // ⛔ Prevent duplicate calls
     if (carLoading) return;

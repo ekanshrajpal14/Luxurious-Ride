@@ -17,7 +17,7 @@ const MainAppNavigator = () => {
     dispatch(fetchCars());
   }, [dispatch]);
   return (
-    <Stack.Navigator>
+    <Stack.Navigator initialRouteName='drawer'>
       <Stack.Screen
         name="drawer"
         component={DrawerNavigator}

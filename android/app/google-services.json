@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "960419897229",
+    "project_id": "luxurious-ride",
+    "storage_bucket": "luxurious-ride.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:960419897229:android:408d943da1f7314b8927c4",
+        "android_client_info": {
+          "package_name": "com.luxuriousride"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC1IE1TDAGEwpN-IfWj5fyuvSeMJi_LCXU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

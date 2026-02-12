@@ -7,14 +7,21 @@ import { PersistGate } from 'redux-persist/integration/react';
 import 'react-native-gesture-handler';
 import Toaster from './components/global/Toaster';
 import { useState } from 'react';
+import { navigationRef } from './services/navigationService';
+import { useFCMToken } from './hooks/useFCMToken';
+import useNotificationNavigation from './hooks/useNotificationNavigation';
+import useNotifeeChannel from './hooks/useNotifeeChannel';
 
 function App() {
   const [isAppReady, setIsAppReady] = useState<boolean>(false);
+  useFCMToken();
+  useNotificationNavigation();
+  useNotifeeChannel();
   return (
     <SafeAreaProvider style={{ flex: 1 }}>
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
-          <NavigationContainer>
+          <NavigationContainer ref={navigationRef}>
             <RootNavigator isAppReady={isAppReady} setIsAppReady={setIsAppReady} />
           </NavigationContainer>
           <Toaster />
