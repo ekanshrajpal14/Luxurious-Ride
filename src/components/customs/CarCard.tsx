@@ -20,7 +20,7 @@ const CarCard: React.FC<CarCardProps> = ({ car }) => {
   return (
     <View key={car.id} style={[styles.card, { backgroundColor: theme.card }]}>
       <Image
-        source={require('../../../assets/cars/car1.png')}
+        source={{ uri: car.CarImages[0].image_url }}
         style={styles.carImage}
       />
 

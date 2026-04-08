@@ -1,3 +1,4 @@
+import { PermissionsAndroid, Platform } from 'react-native';
 import React, { useState } from 'react';
 import {
   View,
@@ -20,23 +21,63 @@ const EditScreen = () => {
   const [imageUri, setImageUri] = useState<string | null>(null);
 
   const pickImage = async () => {
-    ImagePicker.launchImageLibrary(
+    await requestGalleryPermission();
+    ImagePicker.launchCamera(
       {
-        mediaType: 'photo',
-        quality: 0.7,
+        mediaType: 'video',
+        videoQuality: 'high',
+        maxHeight: 10,
+        maxWidth: 100,
       },
-      response => {
-        if (response.didCancel) return;
-        if (response.errorCode) {
-          Alert.alert('Error', 'Failed to pick image');
-          return;
-        }
-
-        if (response.assets && response.assets.length > 0) {
-          setImageUri(response.assets[0].uri || null);
-        }
+      res => {
+        console.log(res);
       },
     );
+    // ImagePicker.launchImageLibrary(
+    //   {
+    //     mediaType: 'video',
+    //     // quality: 0.7,
+    //     videoQuality:"high"
+    //   },
+    //   response => {
+    //     if (response.didCancel) return;
+    //     if (response.errorCode) {
+    //       Alert.alert('Error', 'Failed to pick image');
+    //       return;
+    //     }
+
+    //     if (response.assets && response.assets.length > 0) {
+    //       setImageUri(response.assets[0].uri || null);
+    //     }
+    //   },
+    // );
+  };
+
+  const requestGalleryPermission = async () => {
+    if (Platform.OS === 'android') {
+      // console.log();
+
+      try {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.CAMERA, // or READ_MEDIA_IMAGES
+          {
+            title: 'Gallery Permission',
+            message: 'App needs access to your gallery',
+            buttonNeutral: 'Ask Me Later',
+            buttonNegative: 'Cancel',
+            buttonPositive: 'OK',
+          },
+        );
+
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+          console.log('Permission granted');
+        } else {
+          console.log('Permission denied');
+        }
+      } catch (err) {
+        console.warn(err);
+      }
+    }
   };
 
   const handleSave = () => {

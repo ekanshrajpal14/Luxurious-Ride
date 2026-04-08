@@ -47,6 +47,7 @@ export interface Car {
 
   CarsPricings: CarPricing[];
   CarCategory: CarCategory;
+  CarImages?: any;
   FuelType: FuelType;
 }
 

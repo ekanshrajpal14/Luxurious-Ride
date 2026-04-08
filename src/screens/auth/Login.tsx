@@ -61,6 +61,7 @@ const Login: React.FC<Props> = ({ navigation }) => {
       keyboardVerticalOffset={20}
     >
       <ScrollView
+        keyboardShouldPersistTaps="always"
         style={[styles.container, { backgroundColor: theme.background }]}
       >
         {/* Header */}
@@ -78,7 +79,7 @@ const Login: React.FC<Props> = ({ navigation }) => {
           value={email}
           keyboardType="email-address"
           onChangeText={e => setEmail(e)}
-          style={{textTransform:"lowercase"}}
+          style={{ textTransform: 'lowercase' }}
         />
 
         <Input

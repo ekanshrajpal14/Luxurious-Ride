@@ -56,7 +56,10 @@ const Search = () => {
       keyboardVerticalOffset={80}
     >
       <View style={styles.root}>
-        <ScrollView showsVerticalScrollIndicator={false}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="always"
+        >
           {/* Header */}
           <View style={styles.header}>
             <Text style={styles.headerTitle}>Book your car in seconds</Text>

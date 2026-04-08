@@ -25,6 +25,7 @@ import {
 import { getTheme } from '../../theme/helper';
 import { logout } from '../../store/slices/authSlice';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
+import { persistor } from '../../store/store';
 
 const CustomDrawerContent = ({ navigation }: DrawerContentComponentProps) => {
   const theme = getTheme();
@@ -46,6 +47,11 @@ const CustomDrawerContent = ({ navigation }: DrawerContentComponentProps) => {
       <ChevronRight size={18} color="#999" />
     </TouchableOpacity>
   );
+  const logoutUser = async () => {
+    dispatch(logout());
+    await persistor.purge();
+    // navigation.reset({ index: 0, routes: [{ name: 'auth' }] });
+  };
 
   return (
     <ScrollView
@@ -91,12 +97,7 @@ const CustomDrawerContent = ({ navigation }: DrawerContentComponentProps) => {
       <Item icon={<HelpCircle size={20} />} label="Help Support" />
 
       {/* LOGOUT */}
-      <TouchableOpacity
-        style={styles.logout}
-        onPress={() => {
-          dispatch(logout());
-        }}
-      >
+      <TouchableOpacity style={styles.logout} onPress={() => logoutUser()}>
         <LogOut size={20} color="red" />
         <Text style={styles.logoutText}>Log out</Text>
       </TouchableOpacity>

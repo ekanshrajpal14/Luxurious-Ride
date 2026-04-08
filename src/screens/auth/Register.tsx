@@ -63,6 +63,7 @@ const Register: React.FC<Props> = ({ navigation }) => {
       keyboardVerticalOffset={20}
     >
       <ScrollView
+        keyboardShouldPersistTaps="always"
         style={[styles.container, { backgroundColor: theme.background }]}
       >
         <Navbar />
