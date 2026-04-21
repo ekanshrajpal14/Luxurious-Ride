@@ -7,6 +7,7 @@ import {
   KeyboardAvoidingView,
   ScrollView,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import React, { useState } from 'react';
 import { getTheme } from '../../theme/helper';
@@ -19,6 +20,10 @@ import Input from '../../components/customs/Input';
 import { healthCheckRoute, registerUserApi } from '../../api/api';
 import { useToast } from '../../hooks/useToast';
 import { showErrorMessage } from '../../utils/ErrorHandler';
+import { GoogleSignin, GoogleSigninButton } from '@react-native-google-signin/google-signin';
+import { loginUserWithGoogle } from '../../store/slices/authSlice';
+import { useAppDispatch } from '../../hooks/useAppDispatch';
+import { useAppSelector } from '../../hooks/useAppSelector';
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'register'>;
 const Register: React.FC<Props> = ({ navigation }) => {
@@ -28,7 +33,8 @@ const Register: React.FC<Props> = ({ navigation }) => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [loader, setLoader] = useState<boolean>(false);
-
+  const dispatch = useAppDispatch();
+  const { googleLoginLoader } = useAppSelector(state => state.auth);
   const handleRegisterSubmit = async () => {
     try {
       setLoader(true);
@@ -53,6 +59,16 @@ const Register: React.FC<Props> = ({ navigation }) => {
     } catch (err) {
     } finally {
       setLoader(false);
+    }
+  };
+  const signInWithGoogle = async () => {
+    try {
+      await GoogleSignin.signOut();
+      await GoogleSignin.hasPlayServices();
+      const userInfo: any = await GoogleSignin.signIn();
+      dispatch(loginUserWithGoogle({ id_token: userInfo.data.idToken }));
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -126,12 +142,15 @@ const Register: React.FC<Props> = ({ navigation }) => {
           <View style={[styles.line, { backgroundColor: theme.inputBg }]} />
         </View>
 
-        <TouchableOpacity
-          style={[styles.socialBtn, { backgroundColor: theme.socialBtn }]}
-        >
-          <Text style={styles.socialText}>G Google Pay</Text>
-        </TouchableOpacity>
-
+        <View style={{ width: "100%", height: 48, borderRadius: 14, overflow: 'hidden', borderWidth: 1, borderColor: theme.inputBg }}>
+          {googleLoginLoader ? (
+            <View style={{ width: '100%', height: 48, borderRadius: 14, backgroundColor: theme.inputBg, justifyContent: 'center', alignItems: 'center' }}>
+              <ActivityIndicator color={theme.primary} />
+            </View>
+          ) : (
+            <GoogleSigninButton style={{ width: "100%" }} size={GoogleSigninButton.Size.Wide} color={GoogleSigninButton.Color.Dark} onPress={signInWithGoogle} />
+          )}
+        </View>
         {/* Footer */}
         <Text style={styles.footer}>
           Already have an account?{' '}

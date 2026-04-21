@@ -13,6 +13,10 @@ export type LoginPayload = {
   password: string;
 };
 
+export type GoogleLoginPayload = {
+  id_token: string;
+};
+
 export type AvailableCarsTypes = {
   pickup_location: string;
   trip_type: string;

@@ -1,6 +1,7 @@
 import { AuthResponse, LoginAuthResp } from '../types/auth/authTypes';
 import {
   AvailableCarsTypes,
+  GoogleLoginPayload,
   LoginPayload,
   OtpPayload,
   RegisterPayload,
@@ -44,6 +45,20 @@ export const loginApi = async (
 ): Promise<ApiResponse<LoginAuthResp>> => {
   try {
     const { data } = await axiosInstance.post(authEndpoints.login, payload);
+    return data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const googleAuthApi = async (
+  payload: GoogleLoginPayload,
+): Promise<ApiResponse<LoginAuthResp>> => {
+  try {
+    const { data } = await axiosInstance.post(
+      authEndpoints.googleAuth,
+      payload,
+    );
     return data;
   } catch (error) {
     throw error;

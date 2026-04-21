@@ -1,7 +1,11 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { loginApi, verifyOTPApi } from '../../api/api';
+import { googleAuthApi, loginApi, verifyOTPApi } from '../../api/api';
 import { LoginAuthResp, User } from '../../types/auth/authTypes';
-import { LoginPayload, OtpPayload } from '../../types/auth/requestTypes';
+import {
+  GoogleLoginPayload,
+  LoginPayload,
+  OtpPayload,
+} from '../../types/auth/requestTypes';
 import { ApiResponse } from '../../api/types';
 
 type AuthState = {
@@ -11,7 +15,8 @@ type AuthState = {
   error: string | null;
   isExistingUser: boolean;
   isUserVerified: boolean;
-  loginLoader:boolean;
+  loginLoader: boolean;
+  googleLoginLoader: boolean;
 };
 
 const initialState: AuthState = {
@@ -21,7 +26,8 @@ const initialState: AuthState = {
   error: null,
   isExistingUser: false,
   isUserVerified: false,
-  loginLoader:false
+  loginLoader: false,
+  googleLoginLoader: false,
 };
 
 export const verify = createAsyncThunk<
@@ -44,6 +50,19 @@ export const loginUser = createAsyncThunk<
 >('auth/login', async (payload, { rejectWithValue }) => {
   try {
     const response = await loginApi(payload);
+    return response;
+  } catch (error: any) {
+    return rejectWithValue(error?.message || 'Login failed');
+  }
+});
+
+export const loginUserWithGoogle = createAsyncThunk<
+  ApiResponse<LoginAuthResp>,
+  GoogleLoginPayload,
+  { rejectValue: string }
+>('auth/loginWithGoogle', async (payload, { rejectWithValue }) => {
+  try {
+    const response = await googleAuthApi(payload);
     return response;
   } catch (error: any) {
     return rejectWithValue(error?.message || 'Login failed');
@@ -100,6 +119,23 @@ const authSlice = createSlice({
         )
         .addCase(loginUser.rejected, (state, action) => {
           state.loginLoader = false;
+        }),
+      builder
+        .addCase(loginUserWithGoogle.pending, state => {
+          state.googleLoginLoader = true;
+        })
+        .addCase(
+          loginUserWithGoogle.fulfilled,
+          (state, action: PayloadAction<ApiResponse<LoginAuthResp>>) => {
+            state.googleLoginLoader = false;
+            state.user = action.payload.data.user;
+            state.accessToken = action.payload.data?.accessToken || null;
+            state.isExistingUser = true;
+            state.isUserVerified = action.payload.data.isUserVerified;
+          },
+        )
+        .addCase(loginUserWithGoogle.rejected, (state, action) => {
+          state.googleLoginLoader = false;
         });
   },
 });

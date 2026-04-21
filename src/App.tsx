@@ -8,6 +8,12 @@ import 'react-native-gesture-handler';
 import Toaster from './components/global/Toaster';
 import { useState } from 'react';
 import { navigationRef } from './services/navigationService';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { GOOGLE_WEB_CLIENT_ID } from '@env';
+// Configure Google Sign-In once at app startup
+GoogleSignin.configure({
+  webClientId: GOOGLE_WEB_CLIENT_ID, // ← Replace with Web Client ID from Firebase Console → Project Settings → General
+});
 
 function App() {
   const [isAppReady, setIsAppReady] = useState<boolean>(false);

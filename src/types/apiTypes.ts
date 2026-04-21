@@ -3,6 +3,7 @@ export type AuthEnpoints = {
   login: string;
   logout: string;
   otpVerify: string;
+  googleAuth: string;
 };
 
 export type CarEndpoints = {

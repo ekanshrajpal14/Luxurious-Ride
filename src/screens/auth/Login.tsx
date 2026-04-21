@@ -7,6 +7,7 @@ import {
   KeyboardAvoidingView,
   ScrollView,
   Keyboard,
+  ActivityIndicator,
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { getTheme } from '../../theme/helper';
@@ -17,19 +18,22 @@ import { AuthStackParamList } from '../../types/navigationTypes';
 import Input from '../../components/customs/Input';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useToast } from '../../hooks/useToast';
-import { loginUser } from '../../store/slices/authSlice';
+import { loginUser, loginUserWithGoogle } from '../../store/slices/authSlice';
 import { useAppSelector } from '../../hooks/useAppSelector';
+import { GoogleSignin, GoogleSigninButton } from '@react-native-google-signin/google-signin';
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'login'>;
 
 const Login: React.FC<Props> = ({ navigation }) => {
+
   const dispatch = useAppDispatch();
   const { showError } = useToast();
   const theme = getTheme();
   const [remember, setRemember] = useState(true);
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
-  const { accessToken, loginLoader, isUserVerified } = useAppSelector(
+  const [googleLoading, setGoogleLoading] = useState(false);
+  const { accessToken, loginLoader, isUserVerified, googleLoginLoader } = useAppSelector(
     state => state.auth,
   );
   useEffect(() => {
@@ -52,13 +56,26 @@ const Login: React.FC<Props> = ({ navigation }) => {
         return showError('Email and password cannot be empty');
       }
       dispatch(loginUser({ email_phone: email, password }));
-    } catch (error) {}
+    } catch (error) { }
+  };
+  const signInWithGoogle = async () => {
+    try {
+      setGoogleLoading(true);
+      await GoogleSignin.signOut();
+      await GoogleSignin.hasPlayServices();
+      const userInfo: any = await GoogleSignin.signIn();
+      dispatch(loginUserWithGoogle({ id_token: userInfo.data.idToken }));
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setGoogleLoading(false);
+    }
   };
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
       behavior="padding"
-      // keyboardVerticalOffset={20}
+    // keyboardVerticalOffset={20}
     >
       <ScrollView
         keyboardShouldPersistTaps="always"
@@ -125,21 +142,6 @@ const Login: React.FC<Props> = ({ navigation }) => {
           onPress={handleLogin}
           loading={loginLoader}
         />
-
-        {/* Secondary button */}
-        {/* <GradientButton
-          title="Sign up"
-          gradient1="transparent"
-          gradient2="transparent"
-          textStyle={{ color: theme.primary }}
-          style={{
-            borderWidth: 1,
-            borderColor: theme.primary,
-            marginTop: 12,
-          }}
-          onPress={() => navigation.navigate('register')}
-        /> */}
-
         {/* Divider */}
         <View style={styles.divider}>
           <View style={[styles.line, { backgroundColor: theme.inputBg }]} />
@@ -147,13 +149,15 @@ const Login: React.FC<Props> = ({ navigation }) => {
           <View style={[styles.line, { backgroundColor: theme.inputBg }]} />
         </View>
 
-        {/* Social */}
-        <TouchableOpacity
-          style={[styles.socialBtn, { backgroundColor: theme.socialBtn }]}
-        >
-          <Text style={styles.socialText}>G Google Pay</Text>
-        </TouchableOpacity>
-
+        <View style={{ width: "100%", height: 48, borderRadius: 14, overflow: 'hidden', borderWidth: 1, borderColor: theme.inputBg }}>
+          {googleLoginLoader ? (
+            <View style={{ width: '100%', height: 48, borderRadius: 14, backgroundColor: theme.inputBg, justifyContent: 'center', alignItems: 'center' }}>
+              <ActivityIndicator color={theme.primary} />
+            </View>
+          ) : (
+            <GoogleSigninButton style={{ width: "100%" }} size={GoogleSigninButton.Size.Wide} color={GoogleSigninButton.Color.Dark} onPress={signInWithGoogle} />
+          )}
+        </View>
         {/* Footer */}
         <Text style={styles.footer}>
           Don’t have an account?{' '}

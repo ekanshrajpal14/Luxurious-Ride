@@ -5,6 +5,7 @@ export const authEndpoints: AuthEnpoints = {
   login: `/api/auth/login`,
   logout: `/api/auth/logout`,
   otpVerify: `/api/auth/verify-otp`,
+  googleAuth: `/api/auth/google-login`,
 };
 
 export const carEndpoints: CarEndpoints = {
