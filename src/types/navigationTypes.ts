@@ -28,12 +28,15 @@ export type MainAppStackParamList = {
     pickupLocation: string;
     pickupDate: string;
     pickupTime: string;
+    pickup_datetime: string;
   };
   booking: {
     car_id: number;
     pickupLocation: string;
     pickupDate: string;
     pickupTime: string;
+    pickup_datetime: string;
+    tripType: string;
   };
 };
 

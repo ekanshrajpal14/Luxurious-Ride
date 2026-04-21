@@ -10,4 +10,10 @@ export interface Theme {
   link: string;
   inputBg: string;
   socialBtn: string;
+  gold: string;
+  goldLight: string;
+  goldDim: string;
+  goldBorder: string;
+  statusBar: 'light-content' | 'dark-content';
+  ctaText: string; // always dark on gold button
 }

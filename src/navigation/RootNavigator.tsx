@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import SplashScreen from '../screens/SplashScreen';
 import { RootStackParamsList } from '../types/navigationTypes';
@@ -20,14 +20,19 @@ const RootNavigator: React.FC<RootNavigatorProps> = ({
   setIsAppReady,
 }) => {
   const theme = getTheme();
-  // const hasSeenOnboarding = useAppSelector(
-  //   state => state.app.hasSeenOnboarding,
-  // );
-  // const accessToken = useAppSelector(state => state.auth.accessToken);
+  const hasSeenOnboarding = useAppSelector(
+    state => state.app.hasSeenOnboarding,
+  );
+  const accessToken = useAppSelector(state => state.auth.accessToken);
 
-  // setTimeout(() => {
-  //   setIsAppReady(true);
-  // }, 500);
+  // ✅ Run only once on mount
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsAppReady(true);
+    }, 500);
+
+    return () => clearTimeout(timer); // cleanup
+  }, []); // empty deps = runs once
 
   return (
     <>
@@ -35,34 +40,34 @@ const RootNavigator: React.FC<RootNavigatorProps> = ({
         barStyle={theme.mode === 'dark' ? 'light-content' : 'dark-content'}
       />
       <Stack.Navigator>
-        {/* {!isAppReady ? ( */}
-        <Stack.Screen
-          name="splash"
-          component={SplashScreen}
-          options={{ headerShown: false }}
-        />
-        {/* ) : !hasSeenOnboarding ? ( */}
-        {/* /* ONBOARDING */}
-        <Stack.Screen
-          name="onboard"
-          component={OnboardScreen}
-          options={{ headerShown: false }}
-        />
-        {/* ) : accessToken ? ( */}
-        {/* /* MAIN APP */}
-        <Stack.Screen
-          name="mainApp"
-          component={MainAppNavigator}
-          options={{ headerShown: false }}
-        />
-        {/* ) : ( */}
-        {/* /*  AUTH */}
-        <Stack.Screen
-          name="auth"
-          component={AuthNavigator}
-          options={{ headerShown: false }}
-        />
-        {/* )} */}
+        {!isAppReady ? (
+          <Stack.Screen
+            name="splash"
+            component={SplashScreen}
+            options={{ headerShown: false }}
+          />
+        ) : !hasSeenOnboarding ? (
+          /* ONBOARDING */
+          <Stack.Screen
+            name="onboard"
+            component={OnboardScreen}
+            options={{ headerShown: false }}
+          />
+        ) : accessToken ? (
+          /* MAIN APP */
+          <Stack.Screen
+            name="mainApp"
+            component={MainAppNavigator}
+            options={{ headerShown: false }}
+          />
+        ) : (
+          /*  AUTH */
+          <Stack.Screen
+            name="auth"
+            component={AuthNavigator}
+            options={{ headerShown: false }}
+          />
+        )}
       </Stack.Navigator>
     </>
   );

@@ -16,7 +16,6 @@ export type LoginPayload = {
 export type AvailableCarsTypes = {
   pickup_location: string;
   trip_type: string;
-  pickup_date: string;
-  pickup_time: string;
+  pickup_datetime: string;
   sort_by: string;
 };

@@ -26,6 +26,7 @@ import { getTheme } from '../../theme/helper';
 import { logout } from '../../store/slices/authSlice';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { persistor } from '../../store/store';
+import ThemeToggle from '../../components/global/ThemeToggle';
 
 const CustomDrawerContent = ({ navigation }: DrawerContentComponentProps) => {
   const theme = getTheme();
@@ -78,6 +79,9 @@ const CustomDrawerContent = ({ navigation }: DrawerContentComponentProps) => {
           <Pencil size={18} color={theme.text} />
         </TouchableOpacity>
       </View>
+      <View style={{ position: 'absolute', right: 0, top: '12%' }}>
+        <ThemeToggle isDark={theme.mode === 'dark' ? true : false} />
+      </View>
 
       {/* GENERAL */}
       <Text style={styles.section}>General</Text>
@@ -95,6 +99,7 @@ const CustomDrawerContent = ({ navigation }: DrawerContentComponentProps) => {
       <Item icon={<UserPlus size={20} />} label="Invite Friends" />
       <Item icon={<FileText size={20} />} label="Privacy Policy" />
       <Item icon={<HelpCircle size={20} />} label="Help Support" />
+      {/* <Item icon={} label="Theme" /> */}
 
       {/* LOGOUT */}
       <TouchableOpacity style={styles.logout} onPress={() => logoutUser()}>

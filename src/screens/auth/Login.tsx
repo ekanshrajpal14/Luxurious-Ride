@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   ScrollView,
+  Keyboard,
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { getTheme } from '../../theme/helper';
@@ -53,15 +54,15 @@ const Login: React.FC<Props> = ({ navigation }) => {
       dispatch(loginUser({ email_phone: email, password }));
     } catch (error) {}
   };
-
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
       behavior="padding"
-      keyboardVerticalOffset={20}
+      // keyboardVerticalOffset={20}
     >
       <ScrollView
         keyboardShouldPersistTaps="always"
+        contentContainerStyle={{ flexGrow: 1 }}
         style={[styles.container, { backgroundColor: theme.background }]}
       >
         {/* Header */}

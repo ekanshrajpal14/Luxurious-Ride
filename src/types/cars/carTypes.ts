@@ -1,7 +1,7 @@
 export interface Brands {
   brand_name: string;
   brand_img: string;
-  brand_id: number;
+  id: number;
 }
 
 export interface FetchBrands {

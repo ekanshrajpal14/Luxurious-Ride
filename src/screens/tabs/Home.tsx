@@ -34,13 +34,13 @@ export default function Home() {
     carCurrentPage,
     carTotalPages,
   } = useAppSelector(state => state.cars);
+  console.log(brands);
 
   const dispatch = useAppDispatch();
   const handleLoadMore = () => {
-    // ⛔ Prevent duplicate calls
+    // Prevent duplicate calls
     if (carLoading) return;
 
-    // ⛔ Stop when last page reached
     if (carCurrentPage >= carTotalPages) return;
 
     dispatch(fetchCars({ page: carCurrentPage + 1 }));
@@ -77,9 +77,13 @@ export default function Home() {
           {brandLoading ? (
             <BrandShimmer />
           ) : (
-            brands &&
-            brands.map((item, i) => (
-              <View key={i} style={styles.brandItem}>
+
+            <FlatList
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              data={brands}
+              keyExtractor={item => item.id.toString()}
+              renderItem={({ item }) => <View style={styles.brandItem}>
                 <View
                   style={[styles.brandIcon, { backgroundColor: theme.card }]}
                 >
@@ -91,8 +95,9 @@ export default function Home() {
                 <Text style={[styles.brandText, { color: theme.subText }]}>
                   {item.brand_name}
                 </Text>
-              </View>
-            ))
+              </View>}
+              contentContainerStyle={{ gap: 20, paddingHorizontal: 2 }}
+            />
           )}
         </View>
 
@@ -217,6 +222,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginTop: 14,
+    gap: 10
   },
 
   brandItem: {
