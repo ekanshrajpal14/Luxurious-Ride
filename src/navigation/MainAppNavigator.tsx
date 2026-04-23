@@ -8,13 +8,16 @@ import { fetchBrandsData, fetchCars } from '../store/slices/carSlice';
 import AvailableCars from '../screens/main/AvailableCars';
 import Booking from '../screens/main/Booking';
 import { flushPendingNavigation } from '../services/navigationService';
+import CarDetails from '../screens/main/CarDetail';
+import { getTheme } from '../theme/helper';
 
 const Stack = createNativeStackNavigator<MainAppStackParamList>();
 const MainAppNavigator = () => {
   const dispatch = useAppDispatch();
+  const theme = getTheme();
 
   useEffect(() => {
-    // flushPendingNavigation(); // if any pending navigation then this will navigate it
+    flushPendingNavigation(); // if any pending navigation then this will navigate it
     dispatch(fetchBrandsData());
     dispatch(fetchCars());
   }, [dispatch]);
@@ -28,18 +31,23 @@ const MainAppNavigator = () => {
       <Stack.Screen
         name="editProfile"
         component={EditScreen}
-        options={{ title: 'Edit Your Profile' }}
+        options={{ title: 'Edit Your Profile', headerStyle: { backgroundColor: theme.background }, headerTintColor: theme.text }}
       />
 
       <Stack.Screen
         name="availableCars"
         component={AvailableCars}
-        options={{ title: 'Available Cars' }}
+        options={{ title: 'Available Cars', headerStyle: { backgroundColor: theme.background }, headerTintColor: theme.text }}
       />
       <Stack.Screen
         name="booking"
         component={Booking}
-        options={{ title: 'Booking Your Car' ,headerShown:false}}
+        options={{ title: 'Booking Your Car', headerShown: false }}
+      />
+      <Stack.Screen
+        name="carDetails"
+        component={CarDetails}
+        options={{ title: 'Car Details', headerShown: false }}
       />
     </Stack.Navigator>
   );

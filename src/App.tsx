@@ -10,6 +10,9 @@ import { useState } from 'react';
 import { navigationRef } from './services/navigationService';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { GOOGLE_WEB_CLIENT_ID } from '@env';
+import { useFCMToken } from './hooks/useFCMToken';
+import useNotificationNavigation from './hooks/useNotificationNavigation';
+import useNotifeeChannel from './hooks/useNotifeeChannel';
 // Configure Google Sign-In once at app startup
 GoogleSignin.configure({
   webClientId: GOOGLE_WEB_CLIENT_ID, // ← Replace with Web Client ID from Firebase Console → Project Settings → General
@@ -17,9 +20,9 @@ GoogleSignin.configure({
 
 function App() {
   const [isAppReady, setIsAppReady] = useState<boolean>(false);
-  // useFCMToken();
-  // useNotificationNavigation();
-  // useNotifeeChannel();
+  useFCMToken();
+  useNotificationNavigation();
+  useNotifeeChannel();
   return (
     <SafeAreaProvider style={{ flex: 1 }}>
       <Provider store={store}>

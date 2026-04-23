@@ -8,6 +8,7 @@ import CustomBottomBar from '../screens/tabs/CustomBottomBar';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { getTheme } from '../theme/helper';
 import Search from '../screens/tabs/Search';
+import YourBookings from '../screens/tabs/YourBookings';
 
 const Tabs = createBottomTabNavigator<TabStackParamList>();
 const TabNavigator = () => {
@@ -20,7 +21,7 @@ const TabNavigator = () => {
           component={Home}
         />
         <Tabs.Screen name="search" component={Search} />
-        <Tabs.Screen name="bookings" component={View} />
+        <Tabs.Screen name="bookings" component={YourBookings} />
         <Tabs.Screen name="notifications" component={View} />
       </Tabs.Navigator>
     </SafeAreaView>

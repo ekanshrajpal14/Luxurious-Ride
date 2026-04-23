@@ -27,10 +27,12 @@ import { logout } from '../../store/slices/authSlice';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { persistor } from '../../store/store';
 import ThemeToggle from '../../components/global/ThemeToggle';
+import { useAppSelector } from '../../hooks/useAppSelector';
 
 const CustomDrawerContent = ({ navigation }: DrawerContentComponentProps) => {
   const theme = getTheme();
   const dispatch = useAppDispatch();
+  const { user } = useAppSelector((state) => state.auth);
   const Item = ({
     icon,
     label,
@@ -53,6 +55,8 @@ const CustomDrawerContent = ({ navigation }: DrawerContentComponentProps) => {
     await persistor.purge();
     // navigation.reset({ index: 0, routes: [{ name: 'auth' }] });
   };
+  console.log(user);
+
 
   return (
     <ScrollView
@@ -68,9 +72,9 @@ const CustomDrawerContent = ({ navigation }: DrawerContentComponentProps) => {
 
         <View style={{ flex: 1 }}>
           <Text style={[styles.name, { color: theme.text }]}>
-            Benjamin Jack
+            {user?.name}
           </Text>
-          <Text style={styles.email}>benjaminJack@gmail.com</Text>
+          <Text style={styles.email}>{user?.email}</Text>
         </View>
 
         <TouchableOpacity

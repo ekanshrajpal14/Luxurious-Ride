@@ -66,6 +66,8 @@ export const handleNavigation = (
           pickupLocation: String(data?.pickupLocation),
           pickupDate: String(data?.pickupDate),
           pickupTime: String(data?.pickupTime),
+          pickup_datetime: String(data?.pickup_datetime),
+          tripType: String(data?.tripType),
         },
       });
       break;

@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { View, Text, StyleSheet, Image, Pressable } from 'react-native';
 import React from 'react';
 import { getTheme } from '../../theme/helper';
 import GradientButton from './GradientButton';
@@ -6,8 +6,9 @@ import { Car } from '../../types/cars/carTypes';
 
 interface CarCardProps {
   car: Car;
+  navigation: any;
 }
-const CarCard: React.FC<CarCardProps> = ({ car }) => {
+const CarCard: React.FC<CarCardProps> = ({ car, navigation }) => {
   // const car = {
   //   id: 2,
   //   name: 'Tesla Model S',
@@ -19,10 +20,21 @@ const CarCard: React.FC<CarCardProps> = ({ car }) => {
   const theme = getTheme();
   return (
     <View key={car.id} style={[styles.card, { backgroundColor: theme.card }]}>
-      <Image
-        source={{ uri: car.CarImages[0].image_url }}
-        style={styles.carImage}
-      />
+      <Pressable
+        onPress={() => navigation.navigate('carDetails', {
+          car_id: 1,
+          pickupLocation: "string",
+          pickupDate: "string",
+          pickupTime: "string",
+          pickup_datetime: "string",
+          tripType: "string"
+        })}>
+
+        <Image
+          source={{ uri: car.CarImages[0].image_url }}
+          style={styles.carImage}
+        />
+      </Pressable>
 
       <Text style={[styles.carName, { color: theme.text }]}>{car.name}</Text>
 

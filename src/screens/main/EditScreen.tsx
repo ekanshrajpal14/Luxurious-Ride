@@ -12,19 +12,20 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from 'react-native-image-picker';
 import { getTheme } from '../../theme/helper';
+import { useAppSelector } from '../../hooks/useAppSelector';
 
 const EditScreen = () => {
   const theme = getTheme();
-
-  const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
+  const { user } = useAppSelector((state) => state.auth);
+  const [name, setName] = useState(user?.name);
+  const [phone, setPhone] = useState("");
   const [imageUri, setImageUri] = useState<string | null>(null);
 
   const pickImage = async () => {
     await requestGalleryPermission();
     ImagePicker.launchCamera(
       {
-        mediaType: 'video',
+        mediaType: 'photo',
         videoQuality: 'high',
         maxHeight: 10,
         maxWidth: 100,
@@ -33,30 +34,10 @@ const EditScreen = () => {
         console.log(res);
       },
     );
-    // ImagePicker.launchImageLibrary(
-    //   {
-    //     mediaType: 'video',
-    //     // quality: 0.7,
-    //     videoQuality:"high"
-    //   },
-    //   response => {
-    //     if (response.didCancel) return;
-    //     if (response.errorCode) {
-    //       Alert.alert('Error', 'Failed to pick image');
-    //       return;
-    //     }
-
-    //     if (response.assets && response.assets.length > 0) {
-    //       setImageUri(response.assets[0].uri || null);
-    //     }
-    //   },
-    // );
   };
 
   const requestGalleryPermission = async () => {
     if (Platform.OS === 'android') {
-      // console.log();
-
       try {
         const granted = await PermissionsAndroid.request(
           PermissionsAndroid.PERMISSIONS.CAMERA, // or READ_MEDIA_IMAGES
@@ -81,7 +62,7 @@ const EditScreen = () => {
   };
 
   const handleSave = () => {
-    if (!name.trim()) {
+    if (!name?.trim()) {
       Alert.alert('Validation', 'Please enter name');
       return;
     }
@@ -101,47 +82,61 @@ const EditScreen = () => {
     Alert.alert('Success', 'Profile updated successfully');
   };
 
+  const isDark = theme.mode === 'dark';
+
   return (
-    <SafeAreaView style={styles.safeArea} edges={['left', 'right', 'bottom']}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]} edges={['left', 'right', 'bottom']}>
       <View style={styles.container}>
-        <Text style={styles.title}>Edit Profile</Text>
+        <Text style={[styles.title, { color: theme.text }]}>Edit Profile</Text>
 
         {/* Profile Image */}
         <TouchableOpacity style={styles.imageWrapper} onPress={pickImage}>
           {imageUri ? (
-            <Image source={{ uri: imageUri }} style={styles.image} />
+            <Image source={{ uri: imageUri }} style={[styles.image, { borderColor: theme.border }]} />
           ) : (
-            <View style={styles.placeholder}>
-              <Text style={{ color: '#777' }}>Upload Image</Text>
+            <View style={[styles.placeholder, { backgroundColor: isDark ? theme.card : '#E5E7EB', borderColor: theme.border }]}>
+              <Text style={{ color: theme.grey }}>Upload Image</Text>
             </View>
           )}
         </TouchableOpacity>
 
         {/* Name */}
-        <Text style={styles.label}>Name</Text>
+        <Text style={[styles.label, { color: theme.text }]}>Name</Text>
         <TextInput
           value={name}
           onChangeText={setName}
           placeholder="Enter your name"
-          style={styles.input}
+          placeholderTextColor={theme.grey}
+          style={[styles.input, { backgroundColor: theme.card, borderColor: theme.border, color: theme.text }]}
         />
 
         {/* Phone */}
-        <Text style={styles.label}>Phone Number</Text>
+        <Text style={[styles.label, { color: theme.text }]}>Phone Number</Text>
         <TextInput
           value={phone}
           onChangeText={setPhone}
           placeholder="Enter phone number"
+          placeholderTextColor={theme.grey}
           keyboardType="phone-pad"
-          style={styles.input}
+          style={[styles.input, { backgroundColor: theme.card, borderColor: theme.border, color: theme.text }]}
+        />
+
+        <Text style={[styles.label, { color: theme.text }]}>Email Address</Text>
+        <TextInput
+          value={user?.email}
+          editable={false}
+          placeholder="Enter email address"
+          placeholderTextColor={theme.grey}
+          keyboardType="email-address"
+          style={[styles.input, { backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : '#E5E7EB', borderColor: theme.border, color: theme.grey }]}
         />
 
         {/* Save Button */}
         <TouchableOpacity
-          style={[styles.button, { backgroundColor: theme.primary }]}
+          style={[styles.button, { backgroundColor: theme.gold }]}
           onPress={handleSave}
         >
-          <Text style={styles.buttonText}>Save Changes</Text>
+          <Text style={[styles.buttonText, { color: theme.ctaText }]}>Save Changes</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -153,7 +148,6 @@ export default EditScreen;
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#F4F6F8',
   },
   container: {
     flex: 1,
@@ -172,26 +166,25 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     borderRadius: 60,
+    borderWidth: 2,
   },
   placeholder: {
     width: 120,
     height: 120,
     borderRadius: 60,
-    backgroundColor: '#E5E7EB',
     justifyContent: 'center',
     alignItems: 'center',
+    borderWidth: 1,
   },
   label: {
     fontWeight: '600',
     marginBottom: 6,
   },
   input: {
-    backgroundColor: '#fff',
     padding: 12,
     borderRadius: 8,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: '#ddd',
   },
   button: {
     paddingVertical: 14,
@@ -200,7 +193,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   buttonText: {
-    color: '#fff',
     fontWeight: '700',
   },
 });

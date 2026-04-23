@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   FlatList,
   ActivityIndicator,
+  Button,
 } from 'react-native';
 import { getTheme } from '../../theme/helper';
 import { Filter, Search } from 'lucide-react-native';
@@ -23,8 +24,12 @@ import CarCardShimmer from '../../shimmers/CarCardShimmer';
 import firebase from '@react-native-firebase/app';
 import { useFCMToken } from '../../hooks/useFCMToken';
 import useNotificationNavigation from '../../hooks/useNotificationNavigation';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { MainAppStackParamList } from '../../types/navigationTypes';
 
-export default function Home() {
+type HomeScreenNavigationProp = NativeStackNavigationProp<MainAppStackParamList>;
+
+export default function Home({ navigation }: { navigation: HomeScreenNavigationProp }) {
   const theme = getTheme();
   const {
     brands,
@@ -50,7 +55,7 @@ export default function Home() {
     <View style={[styles.root, { backgroundColor: theme.background }]}>
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Search */}
-        <View style={styles.searchRow}>
+        {/* <View style={styles.searchRow}>
           <View
             style={[
               styles.searchBox,
@@ -68,7 +73,7 @@ export default function Home() {
           <View style={[styles.filterBtn, { backgroundColor: theme.card }]}>
             <Filter color={theme.grey} size={19} />
           </View>
-        </View>
+        </View> */}
 
         {/* Brands */}
         <Text style={[styles.sectionTitle, { color: theme.text }]}>Brands</Text>
@@ -77,25 +82,26 @@ export default function Home() {
           {brandLoading ? (
             <BrandShimmer />
           ) : (
-
             <FlatList
               horizontal
               showsHorizontalScrollIndicator={false}
               data={brands}
               keyExtractor={item => item.id.toString()}
-              renderItem={({ item }) => <View style={styles.brandItem}>
-                <View
-                  style={[styles.brandIcon, { backgroundColor: theme.card }]}
-                >
-                  <Image
-                    source={brandImages[item.brand_name]}
-                    style={styles.brandImage}
-                  />
+              renderItem={({ item }) => (
+                <View style={styles.brandItem}>
+                  <View
+                    style={[styles.brandIcon, { backgroundColor: theme.card }]}
+                  >
+                    <Image
+                      source={brandImages[item.brand_name]}
+                      style={styles.brandImage}
+                    />
+                  </View>
+                  <Text style={[styles.brandText, { color: theme.subText }]}>
+                    {item.brand_name}
+                  </Text>
                 </View>
-                <Text style={[styles.brandText, { color: theme.subText }]}>
-                  {item.brand_name}
-                </Text>
-              </View>}
+              )}
               contentContainerStyle={{ gap: 20, paddingHorizontal: 2 }}
             />
           )}
@@ -128,7 +134,9 @@ export default function Home() {
               showsHorizontalScrollIndicator={false}
               data={cars}
               keyExtractor={item => item.id.toString()}
-              renderItem={({ item }) => <CarCard car={item} />}
+              renderItem={({ item }) => (
+                <CarCard car={item} navigation={navigation} />
+              )}
               contentContainerStyle={{ gap: 20, paddingHorizontal: 2 }}
               onEndReached={handleLoadMore}
               onEndReachedThreshold={0.7}

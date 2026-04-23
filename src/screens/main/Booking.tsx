@@ -16,6 +16,8 @@ import Input from '../../components/customs/Input';
 import RazorpayCheckout from 'react-native-razorpay';
 import CheckBox from '@react-native-community/checkbox';
 import { getTheme } from '../../theme/helper';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { ArrowLeft, MoveLeft, MoveLeftIcon } from 'lucide-react-native';
 
 type Props = NativeStackScreenProps<MainAppStackParamList, 'booking'>;
 
@@ -160,7 +162,7 @@ const Booking = ({ route, navigation }: Props) => {
     };
     RazorpayCheckout.open(options)
       .then((data: any) =>
-        Alert.alert('✅ Payment Successful', data.razorpay_payment_id),
+        Alert.alert('Payment Successful', data.razorpay_payment_id),
       )
       .catch((error: any) =>
         Alert.alert('Payment Failed', `${error.code} | ${error.description}`),
@@ -168,198 +170,199 @@ const Booking = ({ route, navigation }: Props) => {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1, backgroundColor: C.bg }}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={60}
-    >
-      <StatusBar barStyle={C.statusBar} backgroundColor={C.bg} />
+    <SafeAreaView style={[{ flex: 1, backgroundColor: theme.background }]}>
 
-      {/* ── Header ── */}
-      <View
-        style={[
-          styles.header,
-          { backgroundColor: C.bg, borderBottomColor: C.border },
-        ]}
+      <KeyboardAvoidingView
+        style={{ flex: 1, backgroundColor: C.bg }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={60}
       >
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={[
-            styles.backBtn,
-            { backgroundColor: C.surface, borderColor: C.border },
-          ]}
-        >
-          <Text style={[styles.backArrow, { color: C.text }]}>←</Text>
-        </TouchableOpacity>
+        <StatusBar barStyle={C.statusBar} backgroundColor={C.bg} />
 
-        <View>
-          <Text style={[styles.headerTitle, { color: C.text }]}>
-            Complete Booking
-          </Text>
-          <Text style={[styles.headerSub, { color: C.textMuted }]}>
-            Review & pay securely
-          </Text>
-        </View>
-
+        {/* ── Header ── */}
         <View
           style={[
-            styles.headerBadge,
-            { backgroundColor: C.goldDim, borderColor: C.gold },
+            styles.header,
+            { backgroundColor: C.bg, borderBottomColor: C.border },
           ]}
         >
-          <Text style={styles.headerBadgeText}>🔒</Text>
-        </View>
-      </View>
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
 
-      <ScrollView
-        keyboardShouldPersistTaps="always"
-        contentContainerStyle={styles.scroll}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* ── Trip Summary Card ── */}
-        <View
-          style={[
-            styles.card,
-            { backgroundColor: C.surface, borderColor: C.border },
-          ]}
-        >
-          <SectionLabel label="Trip Summary" C={C} />
-          <Divider C={C} />
+          >
+            <ArrowLeft size={22} color={C.text} />
+          </TouchableOpacity>
 
-          <DetailRow label="Pickup City" value={pickupLocation ?? '—'} C={C} />
-          <DetailRow label="Trip Type" value={tripType ?? 'Local'} C={C} />
-          <DetailRow
-            label="Pickup Date & Time"
-            value={`${pickupDate ?? '—'}  |  ${pickupTime ?? '—'}`}
-            C={C}
-          />
-          <DetailRow label="Car & Details" value="Sedan · AC · 4 Seats" C={C} />
+          <View>
+            <Text style={[styles.headerTitle, { color: C.text }]}>
+              Complete Booking
+            </Text>
+            <Text style={[styles.headerSub, { color: C.textMuted }]}>
+              Review & pay securely
+            </Text>
+          </View>
 
-          <Divider C={C} />
-
-          {/* Total Fare */}
-          <View style={styles.fareRow}>
-            <View>
-              <Text style={[styles.fareLabel, { color: C.text }]}>
-                Total Fare
-              </Text>
-              <Text style={[styles.fareSub, { color: C.textMuted }]}>
-                Inclusive of all taxes
-              </Text>
-            </View>
-            <View
-              style={[
-                styles.farePill,
-                { backgroundColor: C.goldDim, borderColor: C.gold },
-              ]}
-            >
-              <Text style={[styles.fareAmount, { color: C.gold }]}>₹1,234</Text>
-            </View>
+          <View
+            style={[
+              styles.headerBadge,
+              { backgroundColor: C.goldDim, borderColor: C.gold },
+            ]}
+          >
+            <Text style={styles.headerBadgeText}>🔒</Text>
           </View>
         </View>
 
-        {/* ── Passenger Details Card ── */}
-        <View
-          style={[
-            styles.card,
-            { backgroundColor: C.surface, borderColor: C.border },
-          ]}
+        <ScrollView
+          keyboardShouldPersistTaps="always"
+          contentContainerStyle={styles.scroll}
+          showsVerticalScrollIndicator={false}
         >
-          <SectionLabel label="Passenger Details" C={C} />
-          <Divider C={C} />
-
-          <StyledInput
-            icon="👤"
-            placeholder="Full Name"
-            value={name}
-            onChangeText={setName}
-            C={C}
-          />
-          <StyledInput
-            icon="✉️"
-            placeholder="Email Address"
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            C={C}
-          />
-          <StyledInput
-            icon="📞"
-            placeholder="Phone Number"
-            value={number}
-            onChangeText={setNumber}
-            keyboardType="phone-pad"
-            C={C}
-          />
-          <StyledInput
-            icon="📍"
-            placeholder="Full Pickup Address"
-            value={pickUp}
-            onChangeText={setPickUp}
-            C={C}
-          />
-
-          {/* Terms checkbox */}
-          <TouchableOpacity
-            style={styles.checkboxRow}
-            onPress={() => setCheckbox(!checkbox)}
-            activeOpacity={0.7}
+          {/* ── Trip Summary Card ── */}
+          <View
+            style={[
+              styles.card,
+              { backgroundColor: C.surface, borderColor: C.border },
+            ]}
           >
-            <CheckBox
-              value={checkbox}
-              tintColors={{ true: C.gold, false: C.border }}
-              onValueChange={() => setCheckbox(!checkbox)}
+            <SectionLabel label="Trip Summary" C={C} />
+            <Divider C={C} />
+
+            <DetailRow label="Pickup City" value={pickupLocation ?? '—'} C={C} />
+            <DetailRow label="Trip Type" value={tripType ?? 'Local'} C={C} />
+            <DetailRow
+              label="Pickup Date & Time"
+              value={`${pickupDate ?? '—'}  |  ${pickupTime ?? '—'}`}
+              C={C}
             />
-            <Text style={[styles.checkboxLabel, { color: C.textMuted }]}>
-              I agree to the{' '}
-              <Text style={[styles.checkboxLink, { color: C.gold }]}>
-                Terms & Conditions
+            <DetailRow label="Car & Details" value="Sedan · AC · 4 Seats" C={C} />
+
+            <Divider C={C} />
+
+            {/* Total Fare */}
+            <View style={styles.fareRow}>
+              <View>
+                <Text style={[styles.fareLabel, { color: C.text }]}>
+                  Total Fare
+                </Text>
+                <Text style={[styles.fareSub, { color: C.textMuted }]}>
+                  Inclusive of all taxes
+                </Text>
+              </View>
+              <View
+                style={[
+                  styles.farePill,
+                  { backgroundColor: C.goldDim, borderColor: C.gold },
+                ]}
+              >
+                <Text style={[styles.fareAmount, { color: C.gold }]}>₹1,234</Text>
+              </View>
+            </View>
+          </View>
+
+          {/* ── Passenger Details Card ── */}
+          <View
+            style={[
+              styles.card,
+              { backgroundColor: C.surface, borderColor: C.border },
+            ]}
+          >
+            {/* <SectionLabel label="Passenger Details" C={C} />
+            <Divider C={C} />
+
+            <StyledInput
+              icon="👤"
+              placeholder="Full Name"
+              value={name}
+              onChangeText={setName}
+              C={C}
+            />
+            <StyledInput
+              icon="✉️"
+              placeholder="Email Address"
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              C={C}
+            />
+            <StyledInput
+              icon="📞"
+              placeholder="Phone Number"
+              value={number}
+              onChangeText={setNumber}
+              keyboardType="phone-pad"
+              C={C}
+            />
+            <StyledInput
+              icon="📍"
+              placeholder="Full Pickup Address"
+              value={pickUp}
+              onChangeText={setPickUp}
+              C={C}
+            /> */}
+
+            {/* Terms checkbox */}
+            <TouchableOpacity
+              style={styles.checkboxRow}
+              onPress={() => setCheckbox(!checkbox)}
+              activeOpacity={0.7}
+            >
+              <CheckBox
+                value={checkbox}
+                tintColors={{ true: C.gold, false: C.border }}
+                onValueChange={() => setCheckbox(!checkbox)}
+              />
+              <Text style={[styles.checkboxLabel, { color: C.textMuted }]}>
+                I agree to the{' '}
+                <Text style={[styles.checkboxLink, { color: C.gold }]}>
+                  Terms & Conditions
+                </Text>
               </Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* ── Pay Now Button ── */}
+          <TouchableOpacity
+            style={[
+              styles.payBtn,
+              { backgroundColor: C.gold },
+              !checkbox && styles.payBtnDisabled,
+            ]}
+            onPress={checkbox ? handlePay : undefined}
+            activeOpacity={0.85}
+          >
+            <Text style={[styles.payBtnText, { color: C.ctaText }]}>
+              Proceed to Payment
+            </Text>
+            <Text style={[styles.payBtnIcon, { color: C.ctaText }]}>→</Text>
+          </TouchableOpacity>
+
+          {/* ── Pay Later ── */}
+          <TouchableOpacity
+            style={[styles.payLaterBtn, { borderColor: C.border }]}
+          >
+            <Text style={[styles.payLaterText, { color: C.textSub }]}>
+              Pay Later at Pickup
             </Text>
           </TouchableOpacity>
-        </View>
 
-        {/* ── Pay Now Button ── */}
-        <TouchableOpacity
-          style={[
-            styles.payBtn,
-            { backgroundColor: C.gold },
-            !checkbox && styles.payBtnDisabled,
-          ]}
-          onPress={checkbox ? handlePay : undefined}
-          activeOpacity={0.85}
-        >
-          <Text style={[styles.payBtnText, { color: C.ctaText }]}>
-            Proceed to Payment
-          </Text>
-          <Text style={[styles.payBtnIcon, { color: C.ctaText }]}>→</Text>
-        </TouchableOpacity>
+          {/* ── Trust strip ── */}
+          <View style={styles.trustStrip}>
+            {[
+              '🔒 Secure Payment',
+              '✅ Instant Confirmation',
+              '🚗 Free Cancellation',
+            ].map(item => (
+              <Text key={item} style={[styles.trustItem, { color: C.textMuted }]}>
+                {item}
+              </Text>
+            ))}
+          </View>
 
-        {/* ── Pay Later ── */}
-        <TouchableOpacity
-          style={[styles.payLaterBtn, { borderColor: C.border }]}
-        >
-          <Text style={[styles.payLaterText, { color: C.textSub }]}>
-            Pay Later at Pickup
-          </Text>
-        </TouchableOpacity>
+          <View style={{ height: 40 }} />
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
 
-        {/* ── Trust strip ── */}
-        <View style={styles.trustStrip}>
-          {[
-            '🔒 Secure Payment',
-            '✅ Instant Confirmation',
-            '🚗 Free Cancellation',
-          ].map(item => (
-            <Text key={item} style={[styles.trustItem, { color: C.textMuted }]}>
-              {item}
-            </Text>
-          ))}
-        </View>
-
-        <View style={{ height: 40 }} />
-      </ScrollView>
-    </KeyboardAvoidingView>
   );
 };
 

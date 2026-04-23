@@ -2,10 +2,12 @@ import React from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { Bell, CarFront, Home, Icon, LucideIcon, Search } from 'lucide-react-native';
+import { getTheme } from '../../theme/helper';
 
 const CustomBottomBar = ({ state, navigation }: BottomTabBarProps) => {
+  const theme = getTheme()
   return (
-    <View style={styles.bottomBar}>
+    <View style={[styles.bottomBar, { backgroundColor: theme.card }]}>
       {state.routes.map((route, index) => {
         const isFocused = state.index === index;
 
@@ -22,12 +24,12 @@ const CustomBottomBar = ({ state, navigation }: BottomTabBarProps) => {
         };
 
         const IconComponent = icons[route.name];
-        
+
         return (
           <Pressable key={route.key} onPress={onPress} style={styles.tab}>
             <IconComponent
               size={22}
-              color={isFocused ? '#000' : '#888'}
+              color={isFocused ? theme.primary : theme.grey}
             />
           </Pressable>
         );
