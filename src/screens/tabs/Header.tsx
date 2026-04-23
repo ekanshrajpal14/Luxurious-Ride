@@ -21,8 +21,8 @@ const Header: React.FC<HeaderProps> = props => {
 
       <View style={styles.headerRight}>
         <View style={styles.notification}>
-          <Bell color={theme.text} />
-          <Text style={styles.badge}>2</Text>
+          {/* <Bell color={theme.text} /> */}
+          {/* <Text style={styles.badge}>2</Text> */}
         </View>
         <TouchableOpacity onPress={()=>navigation.openDrawer()}>
           <Image

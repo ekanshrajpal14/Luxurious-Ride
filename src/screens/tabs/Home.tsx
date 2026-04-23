@@ -11,6 +11,7 @@ import {
   ActivityIndicator,
   Button,
 } from 'react-native';
+import Video from 'react-native-video';
 import { getTheme } from '../../theme/helper';
 import { Filter, Search } from 'lucide-react-native';
 import CarCard from '../../components/customs/CarCard';
@@ -26,10 +27,16 @@ import { useFCMToken } from '../../hooks/useFCMToken';
 import useNotificationNavigation from '../../hooks/useNotificationNavigation';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { MainAppStackParamList } from '../../types/navigationTypes';
+import ImageSwiper from '../../components/ui/ImageSwiper';
 
-type HomeScreenNavigationProp = NativeStackNavigationProp<MainAppStackParamList>;
+type HomeScreenNavigationProp =
+  NativeStackNavigationProp<MainAppStackParamList>;
 
-export default function Home({ navigation }: { navigation: HomeScreenNavigationProp }) {
+export default function Home({
+  navigation,
+}: {
+  navigation: HomeScreenNavigationProp;
+}) {
   const theme = getTheme();
   const {
     brands,
@@ -54,97 +61,125 @@ export default function Home({ navigation }: { navigation: HomeScreenNavigationP
   return (
     <View style={[styles.root, { backgroundColor: theme.background }]}>
       <ScrollView showsVerticalScrollIndicator={false}>
-        {/* Search */}
-        {/* <View style={styles.searchRow}>
-          <View
+        <View
+          style={{
+            flex: 1,
+            width: '100%',
+            height: 150,
+            backgroundColor: '#7ad2f6',
+          }}
+        >
+          <Video
+            source={{ uri: 'https://www.pexels.com/download/video/30604139/' }}
+            style={{ width: '100%', aspectRatio: 16 / 9 }}
+            resizeMode="cover"
+            repeat
+            muted
+            playInBackground
+            // controls
+          />
+          <Text
             style={[
-              styles.searchBox,
-              { backgroundColor: theme.card, borderColor: theme.border },
+              styles.logo,
+              { color: '#fff', padding: 16, position: 'absolute', top: 0 },
             ]}
           >
-            <Search size={17} color={theme.grey} />
-            <TextInput
-              placeholder="Search your dream car..."
-              placeholderTextColor={theme.grey}
-              style={{ color: theme.text }}
-            />
-          </View>
-
-          <View style={[styles.filterBtn, { backgroundColor: theme.card }]}>
-            <Filter color={theme.grey} size={19} />
-          </View>
-        </View> */}
-
-        {/* Brands */}
-        <Text style={[styles.sectionTitle, { color: theme.text }]}>Brands</Text>
-
-        <View style={styles.brandsRow}>
-          {brandLoading ? (
-            <BrandShimmer />
-          ) : (
-            <FlatList
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              data={brands}
-              keyExtractor={item => item.id.toString()}
-              renderItem={({ item }) => (
-                <View style={styles.brandItem}>
-                  <View
-                    style={[styles.brandIcon, { backgroundColor: theme.card }]}
-                  >
-                    <Image
-                      source={brandImages[item.brand_name]}
-                      style={styles.brandImage}
-                    />
-                  </View>
-                  <Text style={[styles.brandText, { color: theme.subText }]}>
-                    {item.brand_name}
-                  </Text>
-                </View>
-              )}
-              contentContainerStyle={{ gap: 20, paddingHorizontal: 2 }}
-            />
-          )}
-        </View>
-
-        {/* Best Cars */}
-        <View style={styles.sectionHeader}>
-          <Text style={[styles.sectionTitle, { color: theme.text }]}>
-            Best Cars
+            Let's find your favorite {'\n'}car here
           </Text>
-          <Text style={[styles.viewAll, { color: theme.link }]}>View All</Text>
         </View>
+        <View
+          style={{
+            flex: 1,
+            paddingHorizontal: 16,
+            backgroundColor: theme.background,
+            borderTopLeftRadius: 24,
+            borderTopRightRadius: 24,
+            marginTop: -40,
+            paddingTop: 20,
+          }}
+        >
+          <Text style={[styles.sectionTitle, { color: theme.text }]}>
+            Brands
+          </Text>
 
-        <View style={styles.cardRow}>
-          {cars.length === 0 && carLoading ? (
-            <View
-              style={{
-                flex: 1,
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-              }}
-            >
-              {[1, 2].map(i => (
-                <CarCardShimmer key={i} />
-              ))}
-            </View>
-          ) : (
-            <FlatList
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              data={cars}
-              keyExtractor={item => item.id.toString()}
-              renderItem={({ item }) => (
-                <CarCard car={item} navigation={navigation} />
-              )}
-              contentContainerStyle={{ gap: 20, paddingHorizontal: 2 }}
-              onEndReached={handleLoadMore}
-              onEndReachedThreshold={0.7}
-              ListFooterComponent={
-                carLoading && cars.length > 0 ? <CarCardShimmer /> : null
-              }
-            />
-          )}
+          <View style={styles.brandsRow}>
+            {brandLoading ? (
+              <BrandShimmer />
+            ) : (
+              <FlatList
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                data={brands}
+                keyExtractor={item => item.id.toString()}
+                renderItem={({ item }) => (
+                  <View style={styles.brandItem}>
+                    <View
+                      style={[
+                        styles.brandIcon,
+                        { backgroundColor: theme.card },
+                      ]}
+                    >
+                      <Image
+                        source={brandImages[item.brand_name]}
+                        style={styles.brandImage}
+                      />
+                    </View>
+                    <Text style={[styles.brandText, { color: theme.subText }]}>
+                      {item.brand_name}
+                    </Text>
+                  </View>
+                )}
+                contentContainerStyle={{ gap: 20, paddingHorizontal: 2 }}
+              />
+            )}
+          </View>
+
+          {/* Best Cars */}
+          <View style={styles.sectionHeader}>
+            <Text style={[styles.sectionTitle, { color: theme.text }]}>
+              Best Cars
+            </Text>
+            <Text style={[styles.viewAll, { color: theme.link }]}>
+              View All
+            </Text>
+          </View>
+
+          <View style={styles.cardRow}>
+            {cars.length === 0 && carLoading ? (
+              <View
+                style={{
+                  flex: 1,
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                }}
+              >
+                {[1, 2].map(i => (
+                  <CarCardShimmer key={i} />
+                ))}
+              </View>
+            ) : (
+              <FlatList
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                data={cars}
+                keyExtractor={item => item.id.toString()}
+                renderItem={({ item }) => (
+                  <CarCard car={item} navigation={navigation} />
+                )}
+                contentContainerStyle={{ gap: 20, paddingHorizontal: 2 }}
+                onEndReached={handleLoadMore}
+                onEndReachedThreshold={0.7}
+                ListFooterComponent={
+                  carLoading && cars.length > 0 ? <CarCardShimmer /> : null
+                }
+              />
+            )}
+          </View>
+          <Text style={[styles.sectionTitle, { color: theme.text }]}>
+            Offers
+          </Text>
+          <ImageSwiper />
+          <View style={{ height: 100 }}></View>
         </View>
       </ScrollView>
     </View>
@@ -155,7 +190,6 @@ const styles = StyleSheet.create({
   root: {
     flex: 1,
     backgroundColor: '#F7F7F7',
-    paddingHorizontal: 16,
   },
 
   header: {
@@ -230,7 +264,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginTop: 14,
-    gap: 10
+    gap: 10,
   },
 
   brandItem: {
